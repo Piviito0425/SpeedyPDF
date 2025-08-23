@@ -7,8 +7,8 @@ import { Toaster } from "@/components/ui/toaster"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "DocLite - Crea PDFs claros desde Markdown",
-  description: "Convierte Markdown + imágenes en PDF con control de versiones y uso de tokens",
+  title: "SpeedyPDF",
+  description: "Convierte rápido contenido en PDF con control de versiones",
   generator: "v0.app",
 }
 
