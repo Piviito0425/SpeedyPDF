@@ -118,8 +118,7 @@ export default function LandingPage() {
               <CardContent>
                 <ul className="space-y-2 mb-6">
                   <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-2" />
-                    2.000 tokens/mes
+                    <Check className="h-4 w-4 text-green-500 mr-2" />3 tokens/diarios
                   </li>
                   <li className="flex items-center">
                     <Check className="h-4 w-4 text-green-500 mr-2" />
@@ -134,9 +133,6 @@ export default function LandingPage() {
                     Exportación PDF
                   </li>
                 </ul>
-                <Button className="w-full bg-transparent" variant="outline">
-                  Empezar gratis
-                </Button>
               </CardContent>
             </Card>
 
@@ -153,7 +149,7 @@ export default function LandingPage() {
                 <ul className="space-y-2 mb-6">
                   <li className="flex items-center">
                     <Check className="h-4 w-4 text-green-500 mr-2" />
-                    50.000 tokens/mes
+                    50 tokens/mensuales
                   </li>
                   <li className="flex items-center">
                     <Check className="h-4 w-4 text-green-500 mr-2" />
@@ -165,7 +161,7 @@ export default function LandingPage() {
                   </li>
                   <li className="flex items-center">
                     <Check className="h-4 w-4 text-green-500 mr-2" />
-                    Soporte prioritario
+                    Control de versiones
                   </li>
                 </ul>
                 <Button className="w-full">Elegir Pro</Button>
@@ -184,19 +180,19 @@ export default function LandingPage() {
                 <ul className="space-y-2 mb-6">
                   <li className="flex items-center">
                     <Check className="h-4 w-4 text-green-500 mr-2" />
-                    200.000 tokens/mes
+                    Tokens ilimitados
                   </li>
                   <li className="flex items-center">
                     <Check className="h-4 w-4 text-green-500 mr-2" />
-                    API access
+                    Todas las plantillas
                   </li>
                   <li className="flex items-center">
                     <Check className="h-4 w-4 text-green-500 mr-2" />
-                    Usuarios ilimitados
+                    Marca personalizada
                   </li>
                   <li className="flex items-center">
                     <Check className="h-4 w-4 text-green-500 mr-2" />
-                    SLA garantizado
+                    Soporte prioritario
                   </li>
                 </ul>
                 <Button className="w-full bg-transparent" variant="outline">
