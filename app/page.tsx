@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { FileText, Upload, Edit, Download, Check } from "lucide-react"
+import Image from "next/image"
 import Link from "next/link"
 
 export default function LandingPage() {
@@ -10,10 +11,10 @@ export default function LandingPage() {
       {/* Header */}
       <header className="border-b">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <FileText className="h-6 w-6" />
+          <Link href="/" className="flex items-center space-x-2">
+            <Image src="/logo.png" width={24} height={24} alt="SpeedyPDF" className="rounded" />
             <span className="text-xl font-semibold">SpeedyPDF</span>
-          </div>
+          </Link>
           <nav className="hidden md:flex items-center space-x-6">
             <Link href="#como-funciona" className="text-muted-foreground hover:text-foreground">
               Cómo funciona
