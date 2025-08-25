@@ -12,7 +12,7 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <FileText className="h-6 w-6" />
-            <span className="text-xl font-semibold">SpeedyPDF</span>
+            <span className="text-xl font-semibold">DocLite</span>
           </div>
           <nav className="hidden md:flex items-center space-x-6">
             <Link href="#como-funciona" className="text-muted-foreground hover:text-foreground">
@@ -31,9 +31,10 @@ export default function LandingPage() {
       {/* Hero Section */}
       <section className="py-20 px-4">
         <div className="container mx-auto text-center max-w-4xl">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">Crea PDFs rápidos con texto e imágenes</h1>
+          <h1 className="text-4xl md:text-6xl font-bold mb-6">Crea PDFs claros desde Markdown + imágenes</h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Convierte tu contenido en documentos PDF lo más rápido posible
+            Convierte tu contenido Markdown en documentos PDF profesionales con plantillas simples, control de versiones
+            y un generoso plan gratuito.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <Button size="lg" asChild>
@@ -65,7 +66,7 @@ export default function LandingPage() {
                 <Check className="h-6 w-6 text-primary" />
               </div>
               <h3 className="font-semibold mb-2">Más tokens gratis</h3>
-              <p className="text-muted-foreground">3 tokens diarios de forma gratuita.</p>
+              <p className="text-muted-foreground">2.000 tokens mensuales gratuitos para empezar.</p>
             </div>
           </div>
         </div>
@@ -81,7 +82,7 @@ export default function LandingPage() {
                 <Upload className="h-8 w-8 text-primary-foreground" />
               </div>
               <h3 className="text-xl font-semibold mb-2">1. Subir</h3>
-              <p className="text-muted-foreground">Sube tu contenido e imágenes de forma sencilla.</p>
+              <p className="text-muted-foreground">Sube tu contenido Markdown e imágenes de forma sencilla.</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
@@ -95,7 +96,7 @@ export default function LandingPage() {
                 <Download className="h-8 w-8 text-primary-foreground" />
               </div>
               <h3 className="text-xl font-semibold mb-2">3. Exportar</h3>
-              <p className="text-muted-foreground">Genera tu PDF listo para compartir.</p>
+              <p className="text-muted-foreground">Genera tu PDF profesional listo para compartir.</p>
             </div>
           </div>
         </div>
@@ -118,7 +119,15 @@ export default function LandingPage() {
                 <ul className="space-y-2 mb-6">
                   <li className="flex items-center">
                     <Check className="h-4 w-4 text-green-500 mr-2" />
-                    3 tokens/diarios
+                    2.000 tokens/mes
+                  </li>
+                  <li className="flex items-center">
+                    <Check className="h-4 w-4 text-green-500 mr-2" />
+                    Plantillas básicas
+                  </li>
+                  <li className="flex items-center">
+                    <Check className="h-4 w-4 text-green-500 mr-2" />
+                    Control de versiones
                   </li>
                   <li className="flex items-center">
                     <Check className="h-4 w-4 text-green-500 mr-2" />
@@ -144,7 +153,7 @@ export default function LandingPage() {
                 <ul className="space-y-2 mb-6">
                   <li className="flex items-center">
                     <Check className="h-4 w-4 text-green-500 mr-2" />
-                    50 tokens/mensuales
+                    50.000 tokens/mes
                   </li>
                   <li className="flex items-center">
                     <Check className="h-4 w-4 text-green-500 mr-2" />
@@ -206,7 +215,7 @@ export default function LandingPage() {
             <div>
               <div className="flex items-center space-x-2 mb-4">
                 <FileText className="h-5 w-5" />
-                <span className="font-semibold">SpeedyPDF</span>
+                <span className="font-semibold">DocLite</span>
               </div>
               <p className="text-muted-foreground text-sm">
                 Convierte Markdown en PDFs profesionales de forma sencilla.
@@ -269,7 +278,7 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-            © 2024 SpeedyPDF. Todos los derechos reservados.
+            © 2024 DocLite. Todos los derechos reservados.
           </div>
         </div>
       </footer>
