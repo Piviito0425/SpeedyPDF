@@ -12,7 +12,7 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <FileText className="h-6 w-6" />
-            <span className="text-xl font-semibold">DocLite</span>
+            <span className="text-xl font-semibold">SpeedyPDF</span>
           </div>
           <nav className="hidden md:flex items-center space-x-6">
             <Link href="#como-funciona" className="text-muted-foreground hover:text-foreground">
@@ -215,7 +215,7 @@ export default function LandingPage() {
             <div>
               <div className="flex items-center space-x-2 mb-4">
                 <FileText className="h-5 w-5" />
-                <span className="font-semibold">DocLite</span>
+                <span className="font-semibold">SpeedyPDF</span>
               </div>
               <p className="text-muted-foreground text-sm">
                 Convierte Markdown en PDFs profesionales de forma sencilla.
@@ -278,7 +278,7 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-            © 2024 DocLite. Todos los derechos reservados.
+            © 2024 SpeedyPDF. Todos los derechos reservados.
           </div>
         </div>
       </footer>

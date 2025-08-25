@@ -23,13 +23,13 @@ export default function TermsPage() {
 
           <h2 id="aceptacion">Aceptación de términos</h2>
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Al acceder y utilizar DocLite, aceptas estar sujeto
-            a estos términos de servicio y todas las leyes y regulaciones aplicables.
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Al acceder y utilizar SpeedyPDF, aceptas estar
+            sujeto a estos términos de servicio y todas las leyes y regulaciones aplicables.
           </p>
 
           <h2 id="descripcion-servicio">Descripción del servicio</h2>
           <p>
-            DocLite es una plataforma que permite convertir documentos Markdown en archivos PDF profesionales. El
+            SpeedyPDF es una plataforma que permite convertir documentos Markdown en archivos PDF profesionales. El
             servicio incluye plantillas, control de versiones y un sistema de tokens para el uso.
           </p>
 
@@ -59,13 +59,13 @@ export default function TermsPage() {
 
           <h2 id="propiedad-intelectual">Propiedad intelectual</h2>
           <p>
-            Mantienes todos los derechos sobre el contenido que creas y subes a DocLite. Nos otorgas una licencia
+            Mantienes todos los derechos sobre el contenido que creas y subes a SpeedyPDF. Nos otorgas una licencia
             limitada para procesar tu contenido y generar los PDFs solicitados.
           </p>
 
           <h2 id="limitacion-responsabilidad">Limitación de responsabilidad</h2>
           <p>
-            En ningún caso DocLite será responsable de daños indirectos, incidentales, especiales o consecuentes que
+            En ningún caso SpeedyPDF será responsable de daños indirectos, incidentales, especiales o consecuentes que
             resulten del uso o la imposibilidad de usar el servicio.
           </p>
 
@@ -78,7 +78,7 @@ export default function TermsPage() {
           <h2 id="contacto">Contacto</h2>
           <p>Si tienes preguntas sobre estos términos de servicio, puedes contactarnos en:</p>
           <ul>
-            <li>Email: legal@doclite.com</li>
+            <li>Email: legal@speedypdf.com</li>
             <li>Dirección: Calle Ejemplo 123, Madrid, España</li>
           </ul>
         </div>

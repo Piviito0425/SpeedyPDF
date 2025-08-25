@@ -38,7 +38,7 @@ export default function DashboardPage() {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <FileText className="h-6 w-6" />
-            <span className="text-xl font-semibold">DocLite</span>
+            <span className="text-xl font-semibold">SpeedyPDF</span>
           </div>
 
           <div className="flex items-center space-x-4">

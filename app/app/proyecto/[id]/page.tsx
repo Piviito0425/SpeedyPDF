@@ -22,7 +22,7 @@ const initialContent = `# Manual de Usuario
 
 ## Introducción
 
-Bienvenido a **DocLite**, la herramienta más sencilla para convertir Markdown en PDFs profesionales.
+Bienvenido a **SpeedyPDF**, la herramienta más sencilla para convertir Markdown en PDFs profesionales.
 
 ## Características principales
 

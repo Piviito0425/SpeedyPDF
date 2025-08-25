@@ -63,7 +63,7 @@ export default function PrivacyPage() {
           <h2 id="contacto">Contacto</h2>
           <p>Si tienes preguntas sobre esta política de privacidad, puedes contactarnos en:</p>
           <ul>
-            <li>Email: privacidad@doclite.com</li>
+            <li>Email: privacidad@speedypdf.com</li>
             <li>Dirección: Calle Ejemplo 123, Madrid, España</li>
           </ul>
         </div>
