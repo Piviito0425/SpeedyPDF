@@ -3,7 +3,7 @@ export default function CookiesPage() {
     <main className="container mx-auto px-4 py-12 max-w-3xl">
       <h1 className="text-3xl font-bold mb-6">Política de Cookies</h1>
       <p className="text-muted-foreground mb-4">
-        Responsable: <strong>[Nombre del responsable]</strong> • NIF/CIF: <strong>[NIF/CIF]</strong>
+        Responsable: <strong>Bypivi</strong> • NIF/CIF: <strong>[NIF/CIF]</strong>
         • Domicilio: <strong>[Dirección completa]</strong>
       </p>
       <p className="text-muted-foreground mb-4">
@@ -18,5 +18,3 @@ export default function CookiesPage() {
     </main>
   )
 }
-
-
