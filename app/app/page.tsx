@@ -79,8 +79,8 @@ export default function DashboardPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold">Mis proyectos</h1>
-            <p className="text-muted-foreground">Gestiona tus documentos y exportaciones PDF</p>
+            <h1 className="text-3xl font-bold">Proyectos</h1>
+            <p className="text-muted-foreground">Gestiona tus proyectos y exportaciones PDF</p>
           </div>
           <Button asChild>
             <Link href="/app/proyecto/nuevo">
