@@ -131,7 +131,7 @@ export default function LandingPage() {
                 <CardTitle>Pro</CardTitle>
                 <CardDescription>Para uso profesional</CardDescription>
                 <div className="text-3xl font-bold">
-                  €9<span className="text-sm font-normal">/mes</span>
+                  €5<span className="text-sm font-normal">/mes</span>
                 </div>
               </CardHeader>
               <CardContent>
@@ -142,7 +142,7 @@ export default function LandingPage() {
                   </li>
                   <li className="flex items-center">
                     <Check className="h-4 w-4 text-green-500 mr-2" />
-                    Plantillas básicas y avanzadas
+                    Más variedad de plantillas
                   </li>
                   <li className="flex items-center">
                     <Check className="h-4 w-4 text-green-500 mr-2" />
@@ -162,7 +162,7 @@ export default function LandingPage() {
                 <CardTitle>Business</CardTitle>
                 <CardDescription>Para equipos grandes</CardDescription>
                 <div className="text-3xl font-bold">
-                  €29<span className="text-sm font-normal">/mes</span>
+                  €30<span className="text-sm font-normal">/mes</span>
                 </div>
               </CardHeader>
               <CardContent>
@@ -173,7 +173,7 @@ export default function LandingPage() {
                   </li>
                   <li className="flex items-center">
                     <Check className="h-4 w-4 text-green-500 mr-2" />
-                    Todas las plantillas
+                    Más variedad de plantillas
                   </li>
                   <li className="flex items-center">
                     <Check className="h-4 w-4 text-green-500 mr-2" />
@@ -202,10 +202,10 @@ export default function LandingPage() {
         <div className="container mx-auto">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <FileText className="h-5 w-5" />
+              <Link href="/" className="flex items-center space-x-2 mb-4">
+                <Image src="/logo.png" width={20} height={20} alt="SpeedyPDF" className="rounded" />
                 <span className="font-semibold">SpeedyPDF</span>
-              </div>
+              </Link>
               <p className="text-muted-foreground text-sm">
                 Convierte contenido en PDFs de forma rápida y sencilla.
               </p>
@@ -261,6 +261,16 @@ export default function LandingPage() {
                 <li>
                   <Link href="/legal/terminos" className="hover:text-foreground">
                     Términos
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/legal/aviso-legal" className="hover:text-foreground">
+                    Aviso Legal
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/legal/cookies" className="hover:text-foreground">
+                    Cookies
                   </Link>
                 </li>
               </ul>
