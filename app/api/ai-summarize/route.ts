@@ -4,16 +4,12 @@ import { NextRequest, NextResponse } from "next/server"
 export const runtime = "nodejs"
 export const maxDuration = 60
 
-export async function POST() {
-  return NextResponse.json({ markdown: "# Resumen de prueba\n\nOK." });
-}
-
-// export async function POST(req: NextRequest) {
- // try {
-   // const { markdown } = await req.json()
-    // if (!markdown || typeof markdown !== "string") {
-     // return NextResponse.json({ error: "Falta 'markdown' (string)" }, { status: 400 })
-   // }
+ export async function POST(req: NextRequest) {
+  try {
+    const { markdown } = await req.json()
+     if (!markdown || typeof markdown !== "string") {
+      return NextResponse.json({ markdown: "#Resumen de prueba\n\nOk." });
+    }
 
     const apiKey = process.env.OPENAI_API_KEY
     if (!apiKey) {
