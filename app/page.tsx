@@ -122,14 +122,6 @@ export default function LandingPage() {
                   </li>
                   <li className="flex items-center">
                     <Check className="h-4 w-4 text-green-500 mr-2" />
-                    Plantillas básicas
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-2" />
-                    Control de versiones
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-2" />
                     Exportación PDF
                   </li>
                 </ul>
@@ -149,19 +141,19 @@ export default function LandingPage() {
                 <ul className="space-y-2 mb-6">
                   <li className="flex items-center">
                     <Check className="h-4 w-4 text-green-500 mr-2" />
-                    50 tokens/mensuales
+                    100 tokens/mensuales
                   </li>
                   <li className="flex items-center">
                     <Check className="h-4 w-4 text-green-500 mr-2" />
-                    Todas las plantillas
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-2" />
-                    Marca personalizada
+                    Plantillas básicas y avanzadas
                   </li>
                   <li className="flex items-center">
                     <Check className="h-4 w-4 text-green-500 mr-2" />
                     Control de versiones
+                  </li>
+                  <li className="flex items-center">
+                    <Check className="h-4 w-4 text-green-500 mr-2" />
+                    Exportación PDF
                   </li>
                 </ul>
                 <Button className="w-full">Elegir Pro</Button>
@@ -188,15 +180,19 @@ export default function LandingPage() {
                   </li>
                   <li className="flex items-center">
                     <Check className="h-4 w-4 text-green-500 mr-2" />
-                    Marca personalizada
+                    Control de versiones
                   </li>
                   <li className="flex items-center">
                     <Check className="h-4 w-4 text-green-500 mr-2" />
-                    Soporte prioritario
+                    Exportación PDF
+                  </li>
+                  <li className="flex items-center">
+                    <Check className="h-4 w-4 text-green-500 mr-2" />
+                    Marca personalizada
                   </li>
                 </ul>
                 <Button className="w-full bg-transparent" variant="outline">
-                  Contactar ventas
+                  Elegir Business
                 </Button>
               </CardContent>
             </Card>
