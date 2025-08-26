@@ -29,13 +29,13 @@ export default function PdfInlineEditor({ pdfUrl }: Props) {
           console.log("Loading pdfjs-dist...")
           const mod = await import("pdfjs-dist")
           pdfjsLib = mod
-          // Configurar worker para evitar errores
-          pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`
+          // Deshabilitar worker completamente para evitar problemas de CDN
+          pdfjsLib.GlobalWorkerOptions.workerSrc = false
           console.log("pdfjs-dist loaded successfully")
         }
 
         console.log("Creating PDF document...")
-        const loadingTask = pdfjsLib.getDocument({ url: pdfUrl })
+        const loadingTask = pdfjsLib.getDocument({ url: pdfUrl, disableWorker: true })
         const pdf = await loadingTask.promise
         console.log("PDF document loaded, pages:", pdf.numPages)
         
