@@ -45,6 +45,7 @@ export const maxDuration = 60
           { role: "user", content: user },
         ],
         temperature: 0.2,
+        max_tokens: 250
       }),
     })
 
