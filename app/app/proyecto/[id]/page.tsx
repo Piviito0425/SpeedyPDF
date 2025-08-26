@@ -244,7 +244,7 @@ export default function ProjectEditorPage({ params }: { params: { id: string } }
                 </div>
 
                 <div>
-                  <Label htmlFor="brand-color">Color de marca</Label>
+                  <Label htmlFor="brand-color">Color de texto</Label>
                   <div className="flex items-center space-x-2">
                     <Input
                       id="brand-color"
