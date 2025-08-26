@@ -16,6 +16,7 @@ import { PdfExportDialog } from "@/components/pdf-export-dialog"
 import { FileText, Save, GitBranch, Download, Upload, X, ArrowLeft } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
+import { Sparkles } from "lucide-react" // icono bonito para IA
 
 // Mock data
 const initialContent = `# Manual de Usuario
@@ -47,7 +48,36 @@ export default function ProjectEditorPage({ params }: { params: { id: string } }
   const [projectName, setProjectName] = useState("Manual de usuario")
   const [uploadedFiles, setUploadedFiles] = useState<Array<{ name: string; size: number }>>([])
   const [showExportDialog, setShowExportDialog] = useState(false)
+  const [aiLoading, setAiLoading] = useState(false)              // ⬅️ nuevo
+  const [aiPreview, setAiPreview] = useState<string | null>(null) // ⬅️ nuevo
   const { toast } = useToast()
+
+  // ⬅️ función nueva: llama a tu API para resumir el Markdown actual
+  const handleAISummarize = async () => {
+    if (!content.trim()) {
+      toast({ title: "Sin contenido", description: "Escribe o pega texto antes de resumir." })
+      return
+    }
+    setAiLoading(true)
+    try {
+      const res = await fetch("/api/ai-summarize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ markdown: content }),
+      })
+      if (!res.ok) {
+        const msg = await res.text()
+        throw new Error(msg || "Fallo al generar el resumen")
+      }
+      const data = await res.json()
+      setAiPreview(data.markdown) // mostramos el resumen en la preview sin pisar tu contenido aún
+      toast({ title: "Resumen listo", description: "Revisa la previsualización a la derecha." })
+    } catch (e: any) {
+      toast({ title: "Error", description: e.message ?? "No se pudo generar el resumen" })
+    } finally {
+      setAiLoading(false)
+    }
+  }
 
   const handleSave = () => {
     // TODO backend: Save project
@@ -90,6 +120,12 @@ export default function ProjectEditorPage({ params }: { params: { id: string } }
     return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
   }
 
+  const applyAiSummary = () => {
+    if (aiPreview) setContent(aiPreview)
+    setAiPreview(null)
+    toast({ title: "Resumen aplicado", description: "El editor se actualizó con el resumen." })
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -121,6 +157,10 @@ export default function ProjectEditorPage({ params }: { params: { id: string } }
               <Button variant="outline" onClick={handleCreateVersion}>
                 <GitBranch className="h-4 w-4 mr-2" />
                 Crear versión
+              </Button>
+              <Button variant="secondary" onClick={handleAISummarize} disabled={aiLoading}>
+                <Sparkles className="h-4 w-4 mr-2" />
+                {aiLoading ? "Resumiendo..." : "Resumir con IA"}
               </Button>
               <Button onClick={() => setShowExportDialog(true)}>
                 <Download className="h-4 w-4 mr-2" />
@@ -245,7 +285,28 @@ export default function ProjectEditorPage({ params }: { params: { id: string } }
             </Card>
 
             {/* Preview */}
-            <MarkdownPreview content={content} template={template} brandColor={brandColor} />
+<Card>
+  <CardHeader>
+    <CardTitle>Previsualización</CardTitle>
+  </CardHeader>
+  <CardContent className="space-y-4">
+    {aiPreview ? (
+      <>
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-muted-foreground">Vista previa del resumen IA (no aplicado)</span>
+          <div className="space-x-2">
+            <Button size="sm" variant="outline" onClick={() => setAiPreview(null)}>Descartar</Button>
+            <Button size="sm" onClick={applyAiSummary}>Aplicar al editor</Button>
+          </div>
+        </div>
+        <MarkdownPreview content={aiPreview} template={template} brandColor={brandColor} />
+      </>
+    ) : (
+      <MarkdownPreview content={content} template={template} brandColor={brandColor} />
+    )}
+  </CardContent>
+</Card>
+
           </div>
         </div>
 
