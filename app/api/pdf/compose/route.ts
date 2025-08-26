@@ -2,7 +2,7 @@ export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
 export const maxDuration = 60
 
-import PDFDocument from "pdfkit"
+import { PDFDocument, rgb, StandardFonts } from "pdf-lib"
 
 export async function POST(req: Request) {
   try {
@@ -18,33 +18,61 @@ export async function POST(req: Request) {
     const titleFontSize = template === "compact" ? 16 : 20
     const bodyFontSize = template === "compact" ? 12 : 13
 
-    const doc = new PDFDocument({ size: "A4", margin })
+    const pdfDoc = await PDFDocument.create()
+    const page = pdfDoc.addPage([595.28, 841.89]) // A4 in points
+    const { width, height } = page.getSize()
 
-    const chunks: Buffer[] = []
-    doc.on("data", (c) => chunks.push(c as Buffer))
-    const done = new Promise<void>((r) => doc.on("end", () => r()))
+    // Background
+    const [rr, gg, bb] = hexToRgb(bgColor)
+    page.drawRectangle({ x: 0, y: 0, width, height, color: rgb(rr / 255, gg / 255, bb / 255) })
 
-    const [r, g, b] = hexToRgb(bgColor)
-    doc.rect(0, 0, doc.page.width, doc.page.height).fill([r / 255, g / 255, b / 255])
+    // Colors and fonts
+    const [tr, tg, tb] = hexToRgb(textColor)
+    const color = rgb(tr / 255, tg / 255, tb / 255)
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica)
 
-    // Reset fill color for text and drawings after background
-    doc.fillColor(textColor)
+    let cursorY = height - margin
 
-    // Optional image
+    // Optional image (png or jpg)
     if (imgBuf) {
-      const maxW = doc.page.width - margin * 2
-      doc.image(imgBuf, { fit: [maxW, 280], align: "center" }).moveDown()
+      try {
+        let img
+        if (isPng(imgBuf)) img = await pdfDoc.embedPng(imgBuf)
+        else img = await pdfDoc.embedJpg(imgBuf)
+        const maxW = width - margin * 2
+        const scaled = img.scaleToFit(maxW, 280)
+        const imgX = (width - scaled.width) / 2
+        const imgY = cursorY - scaled.height
+        page.drawImage(img, { x: imgX, y: imgY, width: scaled.width, height: scaled.height })
+        cursorY = imgY - 16
+      } catch {}
     }
 
-    // Title (first line of the text if any)
     const [firstLine, ...rest] = (text || "(sin contenido)").split(/\r?\n/)
-    doc.fontSize(titleFontSize).text(firstLine, { align: "left" }).moveDown(0.5)
-    doc.fontSize(bodyFontSize).text(rest.join("\n"), { align: "left" })
+    // Title
+    page.drawText(firstLine, {
+      x: margin,
+      y: cursorY - titleFontSize,
+      size: titleFontSize,
+      font,
+      color,
+    })
+    cursorY -= titleFontSize + 10
+    // Body
+    const bodyText = rest.join("\n")
+    drawMultilineText(page, bodyText, {
+      x: margin,
+      yTop: cursorY,
+      maxWidth: width - margin * 2,
+      lineHeight: bodyFontSize * (template === "compact" ? 1.2 : 1.35),
+      size: bodyFontSize,
+      font,
+      color,
+    })
 
-    doc.end()
-    await done
+    const bytes = await pdfDoc.save()
 
-    return new Response(Buffer.concat(chunks), {
+    return new Response(Buffer.from(bytes), {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
@@ -63,6 +91,45 @@ export async function POST(req: Request) {
 function hexToRgb(hex: string): [number, number, number] {
   const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex) || []
   return [parseInt(m[1] || "00", 16), parseInt(m[2] || "00", 16), parseInt(m[3] || "00", 16)]
+}
+
+function isPng(buf: Buffer): boolean {
+  return buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47
+}
+
+function drawMultilineText(
+  page: any,
+  text: string,
+  opts: { x: number; yTop: number; maxWidth: number; lineHeight: number; size: number; font: any; color: any }
+) {
+  const { x, yTop, maxWidth, lineHeight, size, font, color } = opts
+  const lines = text.split(/\r?\n/)
+  let y = yTop
+  for (const line of lines) {
+    const wrapped = wrapLine(line, maxWidth, size, font)
+    for (const w of wrapped) {
+      y -= lineHeight
+      page.drawText(w, { x, y, size, font, color })
+    }
+  }
+}
+
+function wrapLine(line: string, maxWidth: number, fontSize: number, font: any): string[] {
+  const words = line.split(/\s+/)
+  const out: string[] = []
+  let cur = ""
+  for (const w of words) {
+    const test = cur ? cur + " " + w : w
+    const width = font.widthOfTextAtSize(test, fontSize)
+    if (width > maxWidth && cur) {
+      out.push(cur)
+      cur = w
+    } else {
+      cur = test
+    }
+  }
+  if (cur) out.push(cur)
+  return out
 }
 
 
