@@ -1,6 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { GeistSans } from "geist/font/sans"
+import { Poppins } from "next/font/google"
 import { GeistMono } from "geist/font/mono"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
@@ -12,6 +12,13 @@ export const metadata: Metadata = {
   generator: "v0.app",
 }
 
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-sans",
+  display: "swap",
+})
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -22,8 +29,8 @@ export default function RootLayout({
       <head>
         <style>{`
 html {
-  font-family: ${GeistSans.style.fontFamily};
-  --font-sans: ${GeistSans.variable};
+  font-family: ${poppins.style.fontFamily};
+  --font-sans: ${poppins.variable};
   --font-mono: ${GeistMono.variable};
 }
         `}</style>
