@@ -9,19 +9,63 @@ interface MarkdownPreviewProps {
 }
 
 export function MarkdownPreview({ content, template, brandColor = "#000000" }: MarkdownPreviewProps) {
-  // Simple markdown to HTML conversion (in a real app, use a proper markdown parser)
+  // Conversión markdown muy simple manteniendo estructura de bloques
   const parseMarkdown = (text: string) => {
-    return text
-      .replace(/^## (.*$)/gim, "<h2>$1</h2>")
-      .replace(/^# (.*$)/gim, "<h1>$1</h1>")
-      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-      .replace(/\*(.*?)\*/g, "<em>$1</em>")
-      .replace(/^- (.*$)/gim, "<li>$1</li>")
-      .replace(/(<li>.*<\/li>)/s, "<ul>$1</ul>")
-      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
-      .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />')
-      .replace(/\n\n/g, "</p><p>")
-      .replace(/^(.*)$/gm, "<p>$1</p>")
+    const applyInline = (line: string) => {
+      return line
+        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+        .replace(/\*(.*?)\*/g, "<em>$1</em>")
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
+        .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />')
+    }
+
+    const lines = text.split(/\r?\n/)
+    const htmlParts: string[] = []
+    let listBuffer: string[] = []
+
+    const flushList = () => {
+      if (listBuffer.length > 0) {
+        htmlParts.push(`<ul>${listBuffer.join("")}</ul>`) 
+        listBuffer = []
+      }
+    }
+
+    for (const rawLine of lines) {
+      const line = rawLine.trim()
+      if (line.length === 0) {
+        flushList()
+        continue
+      }
+
+      // Listas
+      const listMatch = /^-\s+(.*)$/.exec(line)
+      if (listMatch) {
+        const item = applyInline(listMatch[1])
+        listBuffer.push(`<li>${item}</li>`)
+        continue
+      }
+
+      // Encabezados
+      const h2Match = /^##\s+(.*)$/.exec(line)
+      if (h2Match) {
+        flushList()
+        htmlParts.push(`<h2>${applyInline(h2Match[1])}</h2>`) 
+        continue
+      }
+      const h1Match = /^#\s+(.*)$/.exec(line)
+      if (h1Match) {
+        flushList()
+        htmlParts.push(`<h1>${applyInline(h1Match[1])}</h1>`) 
+        continue
+      }
+
+      // Párrafo normal
+      flushList()
+      htmlParts.push(`<p>${applyInline(line)}</p>`) 
+    }
+
+    flushList()
+    return htmlParts.join("\n")
   }
 
   const templateStyles = {
