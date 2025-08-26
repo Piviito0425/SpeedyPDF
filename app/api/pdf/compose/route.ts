@@ -175,6 +175,15 @@ function parseStructuredText(text: string): any[] {
         align: 'left',
         color: null
       })
+      // Add extra space after title
+      elements.push({
+        type: 'text',
+        content: '',
+        fontSize: 13,
+        bold: false,
+        align: 'left',
+        color: null
+      })
       continue
     }
     
@@ -186,11 +195,33 @@ function parseStructuredText(text: string): any[] {
     )
     
     if (isHeader) {
+      // Add space before header (except for first header)
+      if (elements.length > 0) {
+        elements.push({
+          type: 'text',
+          content: '',
+          fontSize: 13,
+          bold: false,
+          align: 'left',
+          color: null
+        })
+      }
+      
       elements.push({
         type: 'text',
         content: line,
         fontSize: 16,
         bold: true,
+        align: 'left',
+        color: null
+      })
+      
+      // Add space after header
+      elements.push({
+        type: 'text',
+        content: '',
+        fontSize: 13,
+        bold: false,
         align: 'left',
         color: null
       })
@@ -223,6 +254,27 @@ function parseStructuredText(text: string): any[] {
       continue
     }
     
+    // Detect if this is a short line that might be a sub-header
+    const isSubHeader = line.length < 50 && (
+      line.endsWith('.') === false && 
+      line.endsWith('!') === false && 
+      line.endsWith('?') === false &&
+      !line.includes(',') &&
+      !line.includes(';')
+    )
+    
+    if (isSubHeader && line.length > 10) {
+      elements.push({
+        type: 'text',
+        content: line,
+        fontSize: 14,
+        bold: true,
+        align: 'left',
+        color: null
+      })
+      continue
+    }
+    
     // Regular paragraph text
     elements.push({
       type: 'text',
@@ -232,6 +284,18 @@ function parseStructuredText(text: string): any[] {
       align: 'left',
       color: null
     })
+    
+    // Add space after paragraphs (but not after lists or short lines)
+    if (!line.match(/^\d+\.\s/) && !line.match(/^[•\-\*]\s/) && line.length > 30) {
+      elements.push({
+        type: 'text',
+        content: '',
+        fontSize: 13,
+        bold: false,
+        align: 'left',
+        color: null
+      })
+    }
   }
   
   return elements
@@ -320,6 +384,7 @@ function parseTextElements(text: string): any[] {
   while ((ulMatch = ulRegex.exec(text)) !== null) {
     const listContent = ulMatch[1]
     const listItemRegex = /<li[^>]*>(.*?)<\/li>/gi
+    let listItemMatch
     
     while ((listItemMatch = listItemRegex.exec(listContent)) !== null) {
       const content = `• ${listItemMatch[1].trim()}`
