@@ -16,6 +16,7 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [pdfUrl, setPdfUrl] = useState<string | null>(null)
+  const [summaryPdfUrl, setSummaryPdfUrl] = useState<string | null>(null)
   const [template, setTemplate] = useState<"classic" | "compact">("classic")
   const [textColor, setTextColor] = useState("#FFFFFF")
   const [bgColor, setBgColor] = useState("#000000")
@@ -105,6 +106,7 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
 
     setIsSummarizing(true)
     try {
+      // Primero obtener el resumen
       const response = await fetch("/api/ai-summarize", {
         method: "POST",
         headers: {
@@ -118,17 +120,41 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
       }
 
       const data = await response.json()
-      setText(data.summary)
+      const summary = data.summary
+      
+      // Luego generar PDF del resumen
+      const formData = new FormData()
+      formData.append("text", summary)
+      formData.append("template", template)
+      formData.append("textColor", textColor)
+      formData.append("bgColor", bgColor)
+      if (imageFile) {
+        formData.append("image", imageFile)
+      }
+
+      const pdfResponse = await fetch("/api/pdf/compose", {
+        method: "POST",
+        body: formData,
+      })
+
+      if (!pdfResponse.ok) {
+        const errorData = await pdfResponse.json()
+        throw new Error(errorData.error || "Error al generar el PDF del resumen")
+      }
+
+      const blob = await pdfResponse.blob()
+      const url = URL.createObjectURL(blob)
+      setSummaryPdfUrl(url)
       
       toast({
         title: "Resumen generado",
-        description: "El contenido ha sido resumido por IA",
+        description: "El resumen se ha generado y mostrado en la previsualización",
       })
     } catch (error) {
       console.error("Error summarizing:", error)
       toast({
         title: "Error",
-        description: "Error al resumir el texto",
+        description: "Error al generar el resumen",
         variant: "destructive",
       })
     } finally {
@@ -146,6 +172,16 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Editor Section */}
         <div className="lg:col-span-2 space-y-6">
+          {/* PDF Preview */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Previsualización</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <PdfInlineEditor pdfUrl={summaryPdfUrl || pdfUrl} />
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -222,13 +258,13 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
                   <Eye className="h-4 w-4 mr-2" />
                   {isLoading ? "Generando..." : "Previsualizar"}
                 </Button>
-                {pdfUrl && (
+                {(pdfUrl || summaryPdfUrl) && (
                   <Button 
                     variant="outline" 
                     onClick={() => {
                       const a = document.createElement('a')
-                      a.href = pdfUrl
-                      a.download = 'documento.pdf'
+                      a.href = summaryPdfUrl || pdfUrl
+                      a.download = summaryPdfUrl ? 'resumen.pdf' : 'documento.pdf'
                       a.click()
                     }}
                   >
