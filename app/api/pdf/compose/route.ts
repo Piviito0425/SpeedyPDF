@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     // Colors and fonts
     const [tr, tg, tb] = hexToRgb(textColor)
     const color = rgb(tr / 255, tg / 255, tb / 255)
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica)
+    const font = await pdfDoc.embedFont(StandardFonts.TimesRoman)
 
     let cursorY = height - margin
 
@@ -48,7 +48,9 @@ export async function POST(req: Request) {
       } catch {}
     }
 
-    const [firstLine, ...rest] = (text || "(sin contenido)").split(/\r?\n/)
+    // Clean text to avoid encoding issues
+    const cleanText = (text || "(sin contenido)").replace(/[^\x00-\x7F]/g, "")
+    const [firstLine, ...rest] = cleanText.split(/\r?\n/)
     // Title
     page.drawText(firstLine, {
       x: margin,
@@ -115,21 +117,31 @@ function drawMultilineText(
 }
 
 function wrapLine(line: string, maxWidth: number, fontSize: number, font: any): string[] {
-  const words = line.split(/\s+/)
-  const out: string[] = []
-  let cur = ""
-  for (const w of words) {
-    const test = cur ? cur + " " + w : w
-    const width = font.widthOfTextAtSize(test, fontSize)
-    if (width > maxWidth && cur) {
-      out.push(cur)
-      cur = w
-    } else {
-      cur = test
+  try {
+    const words = line.split(/\s+/)
+    const out: string[] = []
+    let cur = ""
+    for (const w of words) {
+      const test = cur ? cur + " " + w : w
+      const width = font.widthOfTextAtSize(test, fontSize)
+      if (width > maxWidth && cur) {
+        out.push(cur)
+        cur = w
+      } else {
+        cur = test
+      }
     }
+    if (cur) out.push(cur)
+    return out
+  } catch (e) {
+    // Fallback: split by characters if font encoding fails
+    const chars = Math.floor(maxWidth / (fontSize * 0.6))
+    const out: string[] = []
+    for (let i = 0; i < line.length; i += chars) {
+      out.push(line.slice(i, i + chars))
+    }
+    return out
   }
-  if (cur) out.push(cur)
-  return out
 }
 
 

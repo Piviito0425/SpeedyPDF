@@ -34,24 +34,28 @@ export default function PdfInlineEditor({ pdfUrl }: Props) {
     async function loadAndRender() {
       if (!pdfUrl || !canvasRef.current) return
 
-      if (!pdfjsLib) {
-        // dynamic import to avoid SSR issues
-        const mod = await import("pdfjs-dist")
-        pdfjsLib = mod
-        // En Next.js/webpack, evitamos bundle del worker usando modo sin worker
-      }
+      try {
+        if (!pdfjsLib) {
+          // dynamic import to avoid SSR issues
+          const mod = await import("pdfjs-dist")
+          pdfjsLib = mod
+          // En Next.js/webpack, evitamos bundle del worker usando modo sin worker
+        }
 
-      const loadingTask = pdfjsLib.getDocument({ url: pdfUrl, disableWorker: true })
-      const pdf = await loadingTask.promise
-      const page = await pdf.getPage(1)
-      const viewport = page.getViewport({ scale: 1.5 })
-      if (cancelled) return
-      const canvas = canvasRef.current
-      const ctx = canvas!.getContext("2d")!
-      canvas!.width = Math.floor(viewport.width)
-      canvas!.height = Math.floor(viewport.height)
-      setPageViewport({ width: viewport.width, height: viewport.height, scale: viewport.scale })
-      await page.render({ canvasContext: ctx, viewport }).promise
+        const loadingTask = pdfjsLib.getDocument({ url: pdfUrl, disableWorker: true })
+        const pdf = await loadingTask.promise
+        const page = await pdf.getPage(1)
+        const viewport = page.getViewport({ scale: 1.5 })
+        if (cancelled) return
+        const canvas = canvasRef.current
+        const ctx = canvas!.getContext("2d")!
+        canvas!.width = Math.floor(viewport.width)
+        canvas!.height = Math.floor(viewport.height)
+        setPageViewport({ width: viewport.width, height: viewport.height, scale: viewport.scale })
+        await page.render({ canvasContext: ctx, viewport }).promise
+      } catch (error) {
+        console.error("Error loading PDF:", error)
+      }
     }
     loadAndRender()
     return () => {
@@ -86,39 +90,44 @@ export default function PdfInlineEditor({ pdfUrl }: Props) {
 
   async function handleDownload() {
     if (!pdfUrl || !pageViewport) return
-    const { PDFDocument, rgb, StandardFonts } = await import("pdf-lib")
+    try {
+      const { PDFDocument, rgb, StandardFonts } = await import("pdf-lib")
 
-    const origBytes = await fetch(pdfUrl).then((r) => r.arrayBuffer())
-    const pdfDoc = await PDFDocument.load(origBytes)
-    const page = pdfDoc.getPage(0)
-    const { width, height } = page.getSize()
+      const origBytes = await fetch(pdfUrl).then((r) => r.arrayBuffer())
+      const pdfDoc = await PDFDocument.load(origBytes)
+      const page = pdfDoc.getPage(0)
+      const { width, height } = page.getSize()
 
-    // map from canvas coords (origin top-left) to PDF coords (origin bottom-left)
-    const scaleX = width / pageViewport.width
-    const scaleY = height / pageViewport.height
+      // map from canvas coords (origin top-left) to PDF coords (origin bottom-left)
+      const scaleX = width / pageViewport.width
+      const scaleY = height / pageViewport.height
 
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica)
+      const font = await pdfDoc.embedFont(StandardFonts.TimesRoman)
 
-    for (const b of textBoxes) {
-      const x = b.x * scaleX
-      const y = height - b.y * scaleY
-      page.drawText(b.text, {
-        x,
-        y,
-        size: 12,
-        font,
-        color: rgb(0, 0, 0),
-      })
+      for (const b of textBoxes) {
+        const x = b.x * scaleX
+        const y = height - b.y * scaleY
+        page.drawText(b.text, {
+          x,
+          y,
+          size: 12,
+          font,
+          color: rgb(0, 0, 0),
+        })
+      }
+
+      const bytes = await pdfDoc.save()
+      const blob = new Blob([bytes], { type: "application/pdf" })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = "editado.pdf"
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error("Error saving PDF:", error)
+      alert("Error al guardar el PDF. Revisa la consola para más detalles.")
     }
-
-    const bytes = await pdfDoc.save()
-    const blob = new Blob([bytes], { type: "application/pdf" })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = "editado.pdf"
-    a.click()
-    URL.revokeObjectURL(url)
   }
 
   return (
