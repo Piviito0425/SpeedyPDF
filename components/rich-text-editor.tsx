@@ -40,6 +40,7 @@ interface RichTextEditorProps {
 
 export default function RichTextEditor({ content, onChange, onImageUpload }: RichTextEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null)
+  const [internalContent, setInternalContent] = useState(content)
   const [isBold, setIsBold] = useState(false)
   const [isItalic, setIsItalic] = useState(false)
   const [isUnderline, setIsUnderline] = useState(false)
@@ -62,11 +63,29 @@ export default function RichTextEditor({ content, onChange, onImageUpload }: Ric
   ]
 
   useEffect(() => {
-    if (editorRef.current) {
-      editorRef.current.innerHTML = content
-      updateWordCount()
+    if (content !== internalContent) {
+      setInternalContent(content)
+      if (editorRef.current) {
+        const selection = window.getSelection()
+        const range = selection?.getRangeAt(0)
+        const wasEditorFocused = editorRef.current.contains(selection?.focusNode)
+        
+        editorRef.current.innerHTML = content
+        updateWordCount()
+        
+        // Restaurar la posición del cursor si el editor estaba enfocado
+        if (wasEditorFocused && selection && range) {
+          try {
+            selection.removeAllRanges()
+            selection.addRange(range)
+          } catch (e) {
+            // Si falla, simplemente enfocar el editor
+            editorRef.current.focus()
+          }
+        }
+      }
     }
-  }, [content])
+  }, [content, internalContent])
 
   const updateWordCount = () => {
     if (editorRef.current) {
@@ -84,7 +103,11 @@ export default function RichTextEditor({ content, onChange, onImageUpload }: Ric
 
   const handleInput = () => {
     if (editorRef.current) {
-      onChange(editorRef.current.innerHTML)
+      const newContent = editorRef.current.innerHTML
+      if (newContent !== internalContent) {
+        setInternalContent(newContent)
+        onChange(newContent)
+      }
       updateWordCount()
     }
   }
