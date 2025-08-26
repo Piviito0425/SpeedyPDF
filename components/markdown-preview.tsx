@@ -22,11 +22,13 @@ export function MarkdownPreview({ content, template, brandColor = "#000000" }: M
     const lines = text.split(/\r?\n/)
     const htmlParts: string[] = []
     let listBuffer: string[] = []
+    let listType: 'ul' | 'ol' | null = null
 
     const flushList = () => {
-      if (listBuffer.length > 0) {
-        htmlParts.push(`<ul>${listBuffer.join("")}</ul>`) 
+      if (listBuffer.length > 0 && listType) {
+        htmlParts.push(`<${listType}>${listBuffer.join("")}</${listType}>`)
         listBuffer = []
+        listType = null
       }
     }
 
@@ -37,10 +39,26 @@ export function MarkdownPreview({ content, template, brandColor = "#000000" }: M
         continue
       }
 
-      // Listas
-      const listMatch = /^-\s+(.*)$/.exec(line)
-      if (listMatch) {
-        const item = applyInline(listMatch[1])
+      // Listas no ordenadas: - o *
+      const ulMatch = /^(?:-|\*)\s+(.*)$/.exec(line)
+      if (ulMatch) {
+        const item = applyInline(ulMatch[1])
+        if (listType !== 'ul') {
+          flushList()
+          listType = 'ul'
+        }
+        listBuffer.push(`<li>${item}</li>`)
+        continue
+      }
+
+      // Listas ordenadas: 1. Texto
+      const olMatch = /^(\d+)\.\s+(.*)$/.exec(line)
+      if (olMatch) {
+        const item = applyInline(olMatch[2])
+        if (listType !== 'ol') {
+          flushList()
+          listType = 'ol'
+        }
         listBuffer.push(`<li>${item}</li>`)
         continue
       }
@@ -56,6 +74,30 @@ export function MarkdownPreview({ content, template, brandColor = "#000000" }: M
       if (h1Match) {
         flushList()
         htmlParts.push(`<h1>${applyInline(h1Match[1])}</h1>`) 
+        continue
+      }
+      const h3Match = /^###\s+(.*)$/.exec(line)
+      if (h3Match) {
+        flushList()
+        htmlParts.push(`<h3>${applyInline(h3Match[1])}</h3>`) 
+        continue
+      }
+      const h4Match = /^####\s+(.*)$/.exec(line)
+      if (h4Match) {
+        flushList()
+        htmlParts.push(`<h4>${applyInline(h4Match[1])}</h4>`) 
+        continue
+      }
+      const h5Match = /^#####\s+(.*)$/.exec(line)
+      if (h5Match) {
+        flushList()
+        htmlParts.push(`<h5>${applyInline(h5Match[1])}</h5>`) 
+        continue
+      }
+      const h6Match = /^######\s+(.*)$/.exec(line)
+      if (h6Match) {
+        flushList()
+        htmlParts.push(`<h6>${applyInline(h6Match[1])}</h6>`) 
         continue
       }
 
@@ -103,6 +145,7 @@ export function MarkdownPreview({ content, template, brandColor = "#000000" }: M
           }
           [data-brand-preview] h1,
           [data-brand-preview] h2,
+          [data-brand-preview] h3,
           [data-brand-preview] a,
           [data-brand-preview] strong {
             color: var(--brand-color);
@@ -117,8 +160,18 @@ export function MarkdownPreview({ content, template, brandColor = "#000000" }: M
             font-weight: 600;
             margin: 1rem 0 0.5rem 0;
           }
+          [data-brand-preview] h3 {
+            font-size: 1.25rem; /* 20px */
+            font-weight: 600;
+            margin: 0.75rem 0 0.5rem 0;
+          }
           [data-brand-preview] ul li::marker {
             color: var(--brand-color);
+          }
+          [data-brand-preview] ol {
+            list-style: decimal;
+            padding-left: 1.25rem;
+            margin: 0 0 0.75rem 0;
           }
           [data-brand-preview] ul {
             list-style: disc;
