@@ -97,17 +97,46 @@ export function MarkdownPreview({ content, template, brandColor = "#000000" }: M
           [data-brand-preview] {
             color: var(--brand-color);
           }
+          [data-brand-preview] p {
+            margin: 0 0 0.75rem 0;
+            line-height: 1.6;
+          }
           [data-brand-preview] h1,
           [data-brand-preview] h2,
           [data-brand-preview] a,
           [data-brand-preview] strong {
             color: var(--brand-color);
           }
+          [data-brand-preview] h1 {
+            font-size: 1.875rem; /* 30px */
+            font-weight: 700;
+            margin: 1.25rem 0 0.75rem 0;
+          }
+          [data-brand-preview] h2 {
+            font-size: 1.5rem; /* 24px */
+            font-weight: 600;
+            margin: 1rem 0 0.5rem 0;
+          }
           [data-brand-preview] ul li::marker {
             color: var(--brand-color);
           }
+          [data-brand-preview] ul {
+            list-style: disc;
+            padding-left: 1.25rem;
+            margin: 0 0 0.75rem 0;
+          }
+          [data-brand-preview] li {
+            margin: 0.25rem 0;
+          }
           [data-brand-preview] a {
             text-decoration-color: var(--brand-color);
+            text-decoration: underline;
+          }
+          [data-brand-preview] img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0.5rem 0;
           }
         `}</style>
         <div
