@@ -65,3 +65,4 @@ export const maxDuration = 60
   } catch (e: any) {
     return NextResponse.json({ error: e.message ?? "Error inesperado" }, { status: 500 })
   }
+}
