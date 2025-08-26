@@ -58,7 +58,12 @@ export const maxDuration = 60
     const markdownOut =
       data?.choices?.[0]?.message?.content?.trim() || "# Resumen\n(No se pudo generar contenido)"
 
-    return NextResponse.json({ markdown: markdownOut })
+      // Uso y coste estimado (gpt-4o-mini): in $0.15/M, out $0.60/M
+    const usage = data?.usage // { prompt_tokens, completion_tokens, total_tokens }
+    const cost_usd_est = usage
+    ? (usage.prompt_tokens / 1e6) * 0.15 + (usage.completion_tokens / 1e6) * 0.60
+    : null
+    return NextResponse.json({ markdown: markdownOut, usage, cost_usd_est })
   } catch (e: any) {
     return NextResponse.json({ error: e.message ?? "Error inesperado" }, { status: 500 })
   }

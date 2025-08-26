@@ -5,7 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { Bold, Italic, List, LinkIcon, ImageIcon, Heading2 } from "lucide-react"
+import { Bold, Italic, List, LinkIcon, Heading2 } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -128,14 +128,7 @@ export function MarkdownEditor({ value, onChange, placeholder = "Escribe tu Mark
             <TooltipContent>Enlace</TooltipContent>
           </Tooltip>
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button size="sm" variant="ghost" onClick={() => insertText("![alt](", ")")} aria-label="Imagen">
-                <ImageIcon className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Imagen</TooltipContent>
-          </Tooltip>
+          
         </div>
       </TooltipProvider>
 

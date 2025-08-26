@@ -8,25 +8,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { MarkdownEditor } from "@/components/markdown-editor"
 import { MarkdownPreview } from "@/components/markdown-preview"
 import { PdfExportDialog } from "@/components/pdf-export-dialog"
-import { FileText, Save, GitBranch, Download, Upload, X, ArrowLeft } from "lucide-react"
+import { FileText, Save, GitBranch, Download, ArrowLeft } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
 import { Sparkles } from "lucide-react" // icono bonito para IA
 
-// Mock data
-const initialContent = `Escribe aquí el texto que desees resumir`
+// Contenido inicial
+const initialContent = `# Título de ejemplo\n\nEscribe aquí tu contenido en Markdown.\n\n- Punto con guion\n* Punto con asterisco\n1. Punto numerado\n\n[Enlace](https://example.com)`
 
 export default function ProjectEditorPage({ params }: { params: { id: string } }) {
   const [content, setContent] = useState(initialContent)
   const [template, setTemplate] = useState<"classic" | "compact">("classic")
   const [brandColor, setBrandColor] = useState("#000000")
   const [projectName, setProjectName] = useState("Manual de usuario")
-  const [uploadedFiles, setUploadedFiles] = useState<Array<{ name: string; size: number }>>([])
   const [showExportDialog, setShowExportDialog] = useState(false)
   const [aiLoading, setAiLoading] = useState(false)              // ⬅️ nuevo
   const [aiPreview, setAiPreview] = useState<string | null>(null) // ⬅️ nuevo
@@ -75,30 +73,7 @@ export default function ProjectEditorPage({ params }: { params: { id: string } }
     })
   }
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || [])
-    const newFiles = files.map((file) => ({
-      name: file.name,
-      size: file.size,
-    }))
-    setUploadedFiles((prev) => [...prev, ...newFiles])
-    toast({
-      title: "Archivos subidos",
-      description: `${files.length} archivo(s) subido(s) correctamente.`,
-    })
-  }
-
-  const removeFile = (index: number) => {
-    setUploadedFiles((prev) => prev.filter((_, i) => i !== index))
-  }
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return "0 Bytes"
-    const k = 1024
-    const sizes = ["Bytes", "KB", "MB"]
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
-  }
+  
 
   const applyAiSummary = () => {
     if (aiPreview) setContent(aiPreview)
@@ -169,57 +144,7 @@ export default function ProjectEditorPage({ params }: { params: { id: string } }
               </CardContent>
             </Card>
 
-            {/* File Upload */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Imágenes</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
-                    <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground mb-2">Arrastra y suelta imágenes aquí, o</p>
-                    <Label htmlFor="file-upload" className="cursor-pointer">
-                      <Button variant="outline" size="sm" asChild>
-                        <span>Seleccionar archivos</span>
-                      </Button>
-                      <Input
-                        id="file-upload"
-                        type="file"
-                        multiple
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleFileUpload}
-                      />
-                    </Label>
-                  </div>
-
-                  {uploadedFiles.length > 0 && (
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-medium">Archivos subidos:</h4>
-                      {uploadedFiles.map((file, index) => (
-                        <div key={index} className="flex items-center justify-between p-2 bg-muted rounded">
-                          <div className="flex items-center space-x-2">
-                            <span className="text-sm">{file.name}</span>
-                            <Badge variant="secondary" className="text-xs">
-                              {formatFileSize(file.size)}
-                            </Badge>
-                          </div>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => removeFile(index)}
-                            aria-label={`Eliminar ${file.name}`}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+            
           </div>
 
           {/* Right Column - Preview */}

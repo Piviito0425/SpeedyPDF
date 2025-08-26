@@ -157,6 +157,7 @@ export function MarkdownPreview({ content, template, brandColor = "#000000" }: M
           [data-brand-preview] h1,
           [data-brand-preview] h2,
           [data-brand-preview] h3,
+          [data-brand-preview] h4,
           [data-brand-preview] a,
           [data-brand-preview] strong {
             color: var(--brand-color);
@@ -173,6 +174,11 @@ export function MarkdownPreview({ content, template, brandColor = "#000000" }: M
           }
           [data-brand-preview] h3 {
             font-size: 1.25rem; /* 20px */
+            font-weight: 600;
+            margin: 0.75rem 0 0.5rem 0;
+          }
+          [data-brand-preview] h4 {
+            font-size: 1.125rem; /* 18px */
             font-weight: 600;
             margin: 0.75rem 0 0.5rem 0;
           }
