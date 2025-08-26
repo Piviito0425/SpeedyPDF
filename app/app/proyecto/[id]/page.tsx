@@ -17,8 +17,8 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [pdfUrl, setPdfUrl] = useState<string | null>(null)
   const [template, setTemplate] = useState<"classic" | "compact">("classic")
-  const [textColor, setTextColor] = useState("#000000")
-  const [bgColor, setBgColor] = useState("#FFFFFF")
+  const [textColor, setTextColor] = useState("#ffffff")
+  const [bgColor, setBgColor] = useState("#000000")
   const [isLoading, setIsLoading] = useState(false)
   const [isSummarizing, setIsSummarizing] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -150,9 +150,6 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <span>Editor</span>
-                <div className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                  7 páginas
-                </div>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -243,7 +240,7 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
               </div>
 
               <div>
-                <Label htmlFor="textColor">Color del texto</Label>
+                <Label htmlFor="textColor">Color del texto de previsualización</Label>
                 <div className="flex items-center gap-2">
                   <Input
                     type="color"
@@ -260,7 +257,7 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
               </div>
 
               <div>
-                <Label htmlFor="bgColor">Color de fondo</Label>
+                <Label htmlFor="bgColor">Color de fondo de previsualización</Label>
                 <div className="flex items-center gap-2">
                   <Input
                     type="color"
