@@ -19,27 +19,7 @@ import Link from "next/link"
 import { Sparkles } from "lucide-react" // icono bonito para IA
 
 // Mock data
-const initialContent = `# Manual de Usuario
-
-## Introducción
-
-Bienvenido a **SpeedyPDF**, la herramienta más sencilla para convertir Markdown en PDFs profesionales.
-
-## Características principales
-
-- Plantillas simples y elegantes
-- Control de versiones integrado
-- Exportación PDF de alta calidad
-- Interfaz intuitiva
-
-## Cómo empezar
-
-1. Escribe tu contenido en Markdown
-2. Elige una plantilla
-3. Personaliza tu marca
-4. Exporta a PDF
-
-¡Es así de fácil!`
+const initialContent = Escribe aquí el texto que desees resumir
 
 export default function ProjectEditorPage({ params }: { params: { id: string } }) {
   const [content, setContent] = useState(initialContent)

@@ -18,8 +18,8 @@ export function MarkdownPreview({ content, template, brandColor = "#000000" }: M
       .replace(/\*(.*?)\*/g, "<em>$1</em>")
       .replace(/^- (.*$)/gim, "<li>$1</li>")
       .replace(/(<li>.*<\/li>)/s, "<ul>$1</ul>")
-      .replace(/\[([^\]]+)\]$$([^)]+)$$/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
-      .replace(/!\[([^\]]*)\]$$([^)]+)$$/g, '<img src="$2" alt="$1" />')
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
+      .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />')
       .replace(/\n\n/g, "</p><p>")
       .replace(/^(.*)$/gm, "<p>$1</p>")
   }
@@ -49,7 +49,22 @@ export function MarkdownPreview({ content, template, brandColor = "#000000" }: M
         <p className="text-sm text-muted-foreground">Plantilla: {template === "classic" ? "Clásica" : "Compacta"}</p>
       </div>
       <div className="p-6 max-h-[600px] overflow-y-auto">
+        <style>{`
+          [data-brand-preview] h1,
+          [data-brand-preview] h2,
+          [data-brand-preview] a,
+          [data-brand-preview] strong {
+            color: var(--brand-color);
+          }
+          [data-brand-preview] ul li::marker {
+            color: var(--brand-color);
+          }
+          [data-brand-preview] a {
+            text-decoration-color: var(--brand-color);
+          }
+        `}</style>
         <div
+          data-brand-preview
           style={
             {
               ...templateStyles[template],
