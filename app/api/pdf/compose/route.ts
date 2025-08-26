@@ -138,26 +138,22 @@ function wrapLine(line: string, maxWidth: number, fontSize: number, font: any): 
 function parseHTMLContent(html: string): any[] {
   const elements: any[] = []
   
-  // Simple regex-based HTML parser for basic elements
-  const cleanText = html.replace(/[^\x00-\x7F]/g, "") // Remove non-ASCII characters
+  // Clean text and remove non-ASCII characters
+  const cleanText = html.replace(/[^\x00-\x7F]/g, "")
   
-  // Extract tables first
+  // Parse HTML elements using regex
+  let currentIndex = 0
+  let remainingText = cleanText
+  
+  // Extract tables first (they have highest priority)
   const tableRegex = /<table[^>]*>([\s\S]*?)<\/table>/gi
   let tableMatch
-  let lastIndex = 0
   
   while ((tableMatch = tableRegex.exec(cleanText)) !== null) {
     // Add text before table
-    const textBefore = cleanText.slice(lastIndex, tableMatch.index).trim()
+    const textBefore = cleanText.slice(currentIndex, tableMatch.index).trim()
     if (textBefore) {
-      elements.push({
-        type: 'text',
-        content: textBefore,
-        fontSize: 13,
-        bold: false,
-        align: 'left',
-        color: null
-      })
+      elements.push(...parseTextElements(textBefore))
     }
     
     // Add table
@@ -167,20 +163,13 @@ function parseHTMLContent(html: string): any[] {
       data: tableData
     })
     
-    lastIndex = tableMatch.index + tableMatch[0].length
+    currentIndex = tableMatch.index + tableMatch[0].length
   }
   
-  // Add remaining text
-  const remainingText = cleanText.slice(lastIndex).trim()
-  if (remainingText) {
-    elements.push({
-      type: 'text',
-      content: remainingText,
-      fontSize: 13,
-      bold: false,
-      align: 'left',
-      color: null
-    })
+  // Add remaining text after tables
+  const finalText = cleanText.slice(currentIndex).trim()
+  if (finalText) {
+    elements.push(...parseTextElements(finalText))
   }
   
   // If no content was parsed, treat the whole thing as text
@@ -193,6 +182,111 @@ function parseHTMLContent(html: string): any[] {
       align: 'left',
       color: null
     })
+  }
+  
+  return elements
+}
+
+function parseTextElements(text: string): any[] {
+  const elements: any[] = []
+  
+  // Parse headings
+  const headingRegex = /<(h[1-6])[^>]*>(.*?)<\/\1>/gi
+  let headingMatch
+  
+  while ((headingMatch = headingRegex.exec(text)) !== null) {
+    const level = parseInt(headingMatch[1].substring(1))
+    const content = headingMatch[2].trim()
+    
+    elements.push({
+      type: 'text',
+      content: content,
+      fontSize: level === 1 ? 24 : level === 2 ? 20 : 16,
+      bold: true,
+      align: 'left',
+      color: null
+    })
+  }
+  
+  // Parse paragraphs
+  const paragraphRegex = /<p[^>]*>(.*?)<\/p>/gi
+  let paragraphMatch
+  
+  while ((paragraphMatch = paragraphRegex.exec(text)) !== null) {
+    const content = paragraphMatch[1].trim()
+    
+    elements.push({
+      type: 'text',
+      content: content,
+      fontSize: 13,
+      bold: false,
+      align: 'left',
+      color: null
+    })
+  }
+  
+  // Parse ordered lists
+  const listRegex = /<ol[^>]*>(.*?)<\/ol>/gis
+  let listMatch
+  
+  while ((listMatch = listRegex.exec(text)) !== null) {
+    const listContent = listMatch[1]
+    const listItemRegex = /<li[^>]*>(.*?)<\/li>/gi
+    let listItemMatch
+    let itemNumber = 1
+    
+    while ((listItemMatch = listItemRegex.exec(listContent)) !== null) {
+      const content = `${itemNumber}. ${listItemMatch[1].trim()}`
+      
+      elements.push({
+        type: 'text',
+        content: content,
+        fontSize: 13,
+        bold: false,
+        align: 'left',
+        color: null
+      })
+      
+      itemNumber++
+    }
+  }
+  
+  // Parse unordered lists
+  const ulRegex = /<ul[^>]*>(.*?)<\/ul>/gis
+  let ulMatch
+  
+  while ((ulMatch = ulRegex.exec(text)) !== null) {
+    const listContent = ulMatch[1]
+    const listItemRegex = /<li[^>]*>(.*?)<\/li>/gi
+    
+    while ((listItemMatch = listItemRegex.exec(listContent)) !== null) {
+      const content = `• ${listItemMatch[1].trim()}`
+      
+      elements.push({
+        type: 'text',
+        content: content,
+        fontSize: 13,
+        bold: false,
+        align: 'left',
+        color: null
+      })
+    }
+  }
+  
+  // If no HTML elements found, treat as plain text
+  if (elements.length === 0) {
+    // Remove any remaining HTML tags
+    const plainText = text.replace(/<[^>]*>/g, '').trim()
+    if (plainText) {
+      elements.push({
+        type: 'text',
+        content: plainText,
+        fontSize: 13,
+        bold: false,
+        align: 'left',
+        color: null
+      })
+    }
   }
   
   return elements
