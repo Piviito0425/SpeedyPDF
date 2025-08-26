@@ -17,8 +17,8 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [pdfUrl, setPdfUrl] = useState<string | null>(null)
   const [template, setTemplate] = useState<"classic" | "compact">("classic")
-  const [textColor, setTextColor] = useState("#ffffff")
-  const [bgColor, setBgColor] = useState("#000000")
+  const [textColor, setTextColor] = useState("#000000")
+  const [bgColor, setBgColor] = useState("#ffffff")
   const [isLoading, setIsLoading] = useState(false)
   const [isSummarizing, setIsSummarizing] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -251,7 +251,7 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
                   <Input
                     value={textColor}
                     onChange={(e) => setTextColor(e.target.value)}
-                    placeholder="#000000"
+                    placeholder="#ffffff"
                   />
                 </div>
               </div>
