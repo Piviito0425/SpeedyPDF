@@ -6,6 +6,7 @@ import { PDFDocument, rgb, StandardFonts } from "pdf-lib"
 
 export async function POST(req: Request) {
   try {
+    console.log("PDF compose endpoint called")
     const form = await req.formData()
     const text = String(form.get("text") ?? "")
     const template = String(form.get("template") ?? "classic")
@@ -73,6 +74,7 @@ export async function POST(req: Request) {
     })
 
     const bytes = await pdfDoc.save()
+    console.log("PDF generated, size:", bytes.length, "bytes")
 
     return new Response(Buffer.from(bytes), {
       status: 200,

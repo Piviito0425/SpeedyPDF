@@ -23,28 +23,50 @@ export default function PdfInlineEditor({ pdfUrl }: Props) {
       setError(null)
 
       try {
+        console.log("Starting PDF load for URL:", pdfUrl)
+        
         if (!pdfjsLib) {
-          // dynamic import to avoid SSR issues
+          console.log("Loading pdfjs-dist...")
           const mod = await import("pdfjs-dist")
           pdfjsLib = mod
+          console.log("pdfjs-dist loaded successfully")
         }
 
+        console.log("Creating PDF document...")
         const loadingTask = pdfjsLib.getDocument({ url: pdfUrl, disableWorker: true })
         const pdf = await loadingTask.promise
+        console.log("PDF document loaded, pages:", pdf.numPages)
+        
         const page = await pdf.getPage(1)
-        const viewport = page.getViewport({ scale: 1.2 }) // Escala más pequeña para mejor vista
+        console.log("Page 1 loaded")
+        
+        const viewport = page.getViewport({ scale: 1.2 })
+        console.log("Viewport created:", viewport.width, "x", viewport.height)
+        
         if (cancelled) return
         
         const canvas = canvasRef.current
-        const ctx = canvas!.getContext("2d")!
-        canvas!.width = Math.floor(viewport.width)
-        canvas!.height = Math.floor(viewport.height)
+        if (!canvas) {
+          throw new Error("Canvas element not found")
+        }
         
+        const ctx = canvas.getContext("2d")
+        if (!ctx) {
+          throw new Error("Could not get 2D context from canvas")
+        }
+        
+        canvas.width = Math.floor(viewport.width)
+        canvas.height = Math.floor(viewport.height)
+        console.log("Canvas size set to:", canvas.width, "x", canvas.height)
+        
+        console.log("Rendering page...")
         await page.render({ canvasContext: ctx, viewport }).promise
-      } catch (error) {
-        console.error("Error loading PDF:", error)
-        setError("Error al cargar la previsualización del PDF")
-      } finally {
+        console.log("Page rendered successfully")
+              } catch (error) {
+          console.error("Error loading PDF:", error)
+          const errorMessage = error instanceof Error ? error.message : "Error desconocido"
+          setError(`Error al cargar la previsualización: ${errorMessage}`)
+        } finally {
         if (!cancelled) {
           setIsLoading(false)
         }
