@@ -3,9 +3,11 @@ export const dynamic = "force-dynamic"
 export const maxDuration = 60
 
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib"
+import { Buffer } from "buffer"
 
 export async function POST(req: Request) {
   try {
+    console.log("PDF compose endpoint called")
     const form = await req.formData()
     const text = String(form.get("text") ?? "")
     const template = String(form.get("template") ?? "classic")
@@ -19,60 +21,72 @@ export async function POST(req: Request) {
     const bodyFontSize = template === "compact" ? 12 : 13
 
     const pdfDoc = await PDFDocument.create()
-    const page = pdfDoc.addPage([595.28, 841.89]) // A4 in points
+    const page = pdfDoc.addPage()
+
     const { width, height } = page.getSize()
 
     // Background
-    const [rr, gg, bb] = hexToRgb(bgColor)
-    page.drawRectangle({ x: 0, y: 0, width, height, color: rgb(rr / 255, gg / 255, bb / 255) })
+    const [br, bg, bb] = hexToRgb(bgColor)
+    page.drawRectangle({
+      x: 0,
+      y: 0,
+      width,
+      height,
+      color: rgb(br / 255, bg / 255, bb / 255),
+    })
 
-    // Colors and fonts
     const [tr, tg, tb] = hexToRgb(textColor)
     const color = rgb(tr / 255, tg / 255, tb / 255)
     const font = await pdfDoc.embedFont(StandardFonts.TimesRoman)
+    const boldFont = await pdfDoc.embedFont(StandardFonts.TimesRomanBold)
 
     let cursorY = height - margin
 
-    // Optional image (png or jpg)
+    // Image
     if (imgBuf) {
-      try {
-        let img
-        if (isPng(imgBuf)) img = await pdfDoc.embedPng(imgBuf)
-        else img = await pdfDoc.embedJpg(imgBuf)
-        const maxW = width - margin * 2
-        const scaled = img.scaleToFit(maxW, 280)
-        const imgX = (width - scaled.width) / 2
-        const imgY = cursorY - scaled.height
-        page.drawImage(img, { x: imgX, y: imgY, width: scaled.width, height: scaled.height })
-        cursorY = imgY - 16
-      } catch {}
+      let image
+      if (file?.type === "image/jpeg") {
+        image = await pdfDoc.embedJpg(imgBuf)
+      } else if (file?.type === "image/png") {
+        image = await pdfDoc.embedPng(imgBuf)
+      }
+
+      if (image) {
+        const imgDims = image.scaleToFit(width - margin * 2, 280)
+        page.drawImage(image, {
+          x: width / 2 - imgDims.width / 2,
+          y: cursorY - imgDims.height,
+          width: imgDims.width,
+          height: imgDims.height,
+        })
+        cursorY -= imgDims.height + 20
+      }
     }
 
-    // Clean text to avoid encoding issues
-    const cleanText = (text || "(sin contenido)").replace(/[^\x00-\x7F]/g, "")
-    const [firstLine, ...rest] = cleanText.split(/\r?\n/)
-    // Title
-    page.drawText(firstLine, {
-      x: margin,
-      y: cursorY - titleFontSize,
-      size: titleFontSize,
-      font,
-      color,
-    })
-    cursorY -= titleFontSize + 10
-    // Body
-    const bodyText = rest.join("\n")
-    drawMultilineText(page, bodyText, {
-      x: margin,
-      yTop: cursorY,
-      maxWidth: width - margin * 2,
-      lineHeight: bodyFontSize * (template === "compact" ? 1.2 : 1.35),
-      size: bodyFontSize,
-      font,
-      color,
-    })
+    // Parse HTML content
+    const parsedContent = parseHTMLContent(text || "(sin contenido)")
+    
+    // Render content
+    for (const element of parsedContent) {
+      if (element.type === 'text') {
+        const lines = wrapLine(element.content, width - margin * 2, element.fontSize || bodyFontSize, element.bold ? boldFont : font)
+        for (const line of lines) {
+          page.drawText(line, {
+            x: margin + (element.align === 'center' ? (width - margin * 2 - font.widthOfTextAtSize(line, element.fontSize || bodyFontSize)) / 2 : 0),
+            y: cursorY - (element.fontSize || bodyFontSize),
+            font: element.bold ? boldFont : font,
+            size: element.fontSize || bodyFontSize,
+            color: element.color || color,
+          })
+          cursorY -= (element.fontSize || bodyFontSize) * 1.2
+        }
+      } else if (element.type === 'table') {
+        cursorY = drawTable(page, element, margin, cursorY, font, color)
+      }
+    }
 
     const bytes = await pdfDoc.save()
+    console.log("PDF generated, size:", bytes.length, "bytes")
 
     return new Response(Buffer.from(bytes), {
       status: 200,
@@ -83,37 +97,14 @@ export async function POST(req: Request) {
       },
     })
   } catch (e: any) {
-    return new Response(JSON.stringify({ error: e?.message || "PDF error", stack: e?.stack }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    })
+    console.error("PDF compose error:", e)
+    return new Response(JSON.stringify({ error: e?.message || "PDF error" }), { status: 500 })
   }
 }
 
 function hexToRgb(hex: string): [number, number, number] {
   const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex) || []
   return [parseInt(m[1] || "00", 16), parseInt(m[2] || "00", 16), parseInt(m[3] || "00", 16)]
-}
-
-function isPng(buf: Buffer): boolean {
-  return buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47
-}
-
-function drawMultilineText(
-  page: any,
-  text: string,
-  opts: { x: number; yTop: number; maxWidth: number; lineHeight: number; size: number; font: any; color: any }
-) {
-  const { x, yTop, maxWidth, lineHeight, size, font, color } = opts
-  const lines = text.split(/\r?\n/)
-  let y = yTop
-  for (const line of lines) {
-    const wrapped = wrapLine(line, maxWidth, size, font)
-    for (const w of wrapped) {
-      y -= lineHeight
-      page.drawText(w, { x, y, size, font, color })
-    }
-  }
 }
 
 function wrapLine(line: string, maxWidth: number, fontSize: number, font: any): string[] {
@@ -142,6 +133,152 @@ function wrapLine(line: string, maxWidth: number, fontSize: number, font: any): 
     }
     return out
   }
+}
+
+function parseHTMLContent(html: string): any[] {
+  const elements: any[] = []
+  
+  // Simple regex-based HTML parser for basic elements
+  const cleanText = html.replace(/[^\x00-\x7F]/g, "") // Remove non-ASCII characters
+  
+  // Extract tables first
+  const tableRegex = /<table[^>]*>([\s\S]*?)<\/table>/gi
+  let tableMatch
+  let lastIndex = 0
+  
+  while ((tableMatch = tableRegex.exec(cleanText)) !== null) {
+    // Add text before table
+    const textBefore = cleanText.slice(lastIndex, tableMatch.index).trim()
+    if (textBefore) {
+      elements.push({
+        type: 'text',
+        content: textBefore,
+        fontSize: 13,
+        bold: false,
+        align: 'left',
+        color: null
+      })
+    }
+    
+    // Add table
+    const tableData = parseTableFromHTML(tableMatch[1])
+    elements.push({
+      type: 'table',
+      data: tableData
+    })
+    
+    lastIndex = tableMatch.index + tableMatch[0].length
+  }
+  
+  // Add remaining text
+  const remainingText = cleanText.slice(lastIndex).trim()
+  if (remainingText) {
+    elements.push({
+      type: 'text',
+      content: remainingText,
+      fontSize: 13,
+      bold: false,
+      align: 'left',
+      color: null
+    })
+  }
+  
+  // If no content was parsed, treat the whole thing as text
+  if (elements.length === 0) {
+    elements.push({
+      type: 'text',
+      content: cleanText || "(sin contenido)",
+      fontSize: 13,
+      bold: false,
+      align: 'left',
+      color: null
+    })
+  }
+  
+  return elements
+}
+
+function parseTableFromHTML(tableHTML: string): string[][] {
+  const rows: string[][] = []
+  
+  // Extract rows
+  const rowRegex = /<tr[^>]*>([\s\S]*?)<\/tr>/gi
+  let rowMatch
+  
+  while ((rowMatch = rowRegex.exec(tableHTML)) !== null) {
+    const rowData: string[] = []
+    
+    // Extract cells from this row
+    const cellRegex = /<(td|th)[^>]*>([\s\S]*?)<\/(td|th)>/gi
+    let cellMatch
+    
+    while ((cellMatch = cellRegex.exec(rowMatch[1])) !== null) {
+      // Clean cell content
+      const cellContent = cellMatch[2]
+        .replace(/<[^>]*>/g, '') // Remove HTML tags
+        .replace(/&nbsp;/g, ' ') // Replace &nbsp;
+        .replace(/&amp;/g, '&') // Replace &amp;
+        .replace(/&lt;/g, '<') // Replace &lt;
+        .replace(/&gt;/g, '>') // Replace &gt;
+        .trim()
+      
+      rowData.push(cellContent)
+    }
+    
+    if (rowData.length > 0) {
+      rows.push(rowData)
+    }
+  }
+  
+  return rows
+}
+
+function drawTable(page: any, tableElement: any, margin: number, startY: number, font: any, color: any): number {
+  const { width } = page.getSize()
+  const tableWidth = width - margin * 2
+  const cellPadding = 8
+  const cellHeight = 20
+  const borderWidth = 1
+  
+  let currentY = startY
+  
+  for (let i = 0; i < tableElement.data.length; i++) {
+    const row = tableElement.data[i]
+    const maxCells = Math.max(...tableElement.data.map((r: string[]) => r.length))
+    const cellWidth = tableWidth / maxCells
+    
+    for (let j = 0; j < row.length; j++) {
+      const cellText = row[j]
+      const cellX = margin + j * cellWidth
+      const cellY = currentY - cellHeight
+      
+      // Draw cell border
+      page.drawRectangle({
+        x: cellX,
+        y: cellY,
+        width: cellWidth,
+        height: cellHeight,
+        borderWidth: borderWidth,
+        borderColor: color,
+      })
+      
+      // Draw cell text
+      const textLines = wrapLine(cellText, cellWidth - cellPadding * 2, 10, font)
+      for (let k = 0; k < textLines.length && k < 2; k++) {
+        page.drawText(textLines[k], {
+          x: cellX + cellPadding,
+          y: cellY + cellHeight - 12 - k * 12,
+          font,
+          size: 10,
+          color,
+        })
+      }
+    }
+    
+    currentY -= cellHeight
+  }
+  
+  return currentY - 10
 }
 
 
