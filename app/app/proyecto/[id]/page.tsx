@@ -19,7 +19,7 @@ import Link from "next/link"
 import { Sparkles } from "lucide-react" // icono bonito para IA
 
 // Mock data
-const initialContent = Escribe aquí el texto que desees resumir
+const initialContent = `Escribe aquí el texto que desees resumir`
 
 export default function ProjectEditorPage({ params }: { params: { id: string } }) {
   const [content, setContent] = useState(initialContent)
