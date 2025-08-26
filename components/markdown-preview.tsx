@@ -50,6 +50,9 @@ export function MarkdownPreview({ content, template, brandColor = "#000000" }: M
       </div>
       <div className="p-6 max-h-[600px] overflow-y-auto">
         <style>{`
+          [data-brand-preview] {
+            color: var(--brand-color);
+          }
           [data-brand-preview] h1,
           [data-brand-preview] h2,
           [data-brand-preview] a,
