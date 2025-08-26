@@ -6,9 +6,9 @@ export const maxDuration = 60
 
  export async function POST(req: NextRequest) {
   try {
-    const { markdown } = await req.json()
-     if (!markdown || typeof markdown !== "string") {
-      return NextResponse.json({ markdown: "#Resumen de prueba\n\nOk." });
+    const { text } = await req.json()
+     if (!text || typeof text !== "string") {
+      return NextResponse.json({ summary: "Resumen de prueba\n\nOk." });
     }
 
     const apiKey = process.env.OPENAI_API_KEY
@@ -25,10 +25,8 @@ export const maxDuration = 60
     ].join("\n")
 
     const user = [
-      "Texto original en Markdown a resumir:",
-      "```markdown",
-      markdown,
-      "```",
+      "Texto original a resumir:",
+      text,
     ].join("\n")
 
     // Llamada al endpoint de Chat Completions (OpenAI)
@@ -55,16 +53,15 @@ export const maxDuration = 60
     }
 
     const data = await res.json()
-    const markdownOut =
-      data?.choices?.[0]?.message?.content?.trim() || "# Resumen\n(No se pudo generar contenido)"
+    const summary =
+      data?.choices?.[0]?.message?.content?.trim() || "Resumen\n(No se pudo generar contenido)"
 
       // Uso y coste estimado (gpt-4o-mini): in $0.15/M, out $0.60/M
     const usage = data?.usage // { prompt_tokens, completion_tokens, total_tokens }
     const cost_usd_est = usage
     ? (usage.prompt_tokens / 1e6) * 0.15 + (usage.completion_tokens / 1e6) * 0.60
     : null
-    return NextResponse.json({ markdown: markdownOut, usage, cost_usd_est })
+    return NextResponse.json({ summary, usage, cost_usd_est })
   } catch (e: any) {
     return NextResponse.json({ error: e.message ?? "Error inesperado" }, { status: 500 })
   }
-}
