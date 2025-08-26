@@ -249,6 +249,19 @@ export default function ProjectEditorPage({ params }: { params: { id: string } }
 
                 <div className="flex gap-2">
                   <Button onClick={previewEditable}>Previsualizar</Button>
+                  {pdfUrl && (
+                    <Button 
+                      variant="outline" 
+                      onClick={() => {
+                        const a = document.createElement('a')
+                        a.href = pdfUrl
+                        a.download = 'documento.pdf'
+                        a.click()
+                      }}
+                    >
+                      Descargar PDF
+                    </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>
