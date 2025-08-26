@@ -80,6 +80,10 @@ export async function POST(req: Request) {
           })
           cursorY -= (element.fontSize || bodyFontSize) * 1.2
         }
+        // Add extra space after headings
+        if (element.bold && element.fontSize && element.fontSize > 15) {
+          cursorY -= 10
+        }
       } else if (element.type === 'table') {
         cursorY = drawTable(page, element, margin, cursorY, font, color)
       }
@@ -141,38 +145,36 @@ function parseHTMLContent(html: string): any[] {
   // Clean text and remove non-ASCII characters
   const cleanText = html.replace(/[^\x00-\x7F]/g, "")
   
-  // Parse HTML elements using regex
-  let currentIndex = 0
-  let remainingText = cleanText
+  // First, try to parse as HTML
+  const htmlElements = parseTextElements(cleanText)
   
-  // Extract tables first (they have highest priority)
-  const tableRegex = /<table[^>]*>([\s\S]*?)<\/table>/gi
-  let tableMatch
+  if (htmlElements.length > 0) {
+    // HTML was found, use it
+    return htmlElements
+  }
   
-  while ((tableMatch = tableRegex.exec(cleanText)) !== null) {
-    // Add text before table
-    const textBefore = cleanText.slice(currentIndex, tableMatch.index).trim()
-    if (textBefore) {
-      elements.push(...parseTextElements(textBefore))
+  // If no HTML elements found, treat as plain text
+  // Split by lines and create separate elements
+  const lines = cleanText.split('\n').filter(line => line.trim().length > 0)
+  
+  for (const line of lines) {
+    const trimmedLine = line.trim()
+    if (trimmedLine) {
+      // Check if it looks like a heading (all caps, short)
+      const isHeading = trimmedLine.length < 50 && trimmedLine === trimmedLine.toUpperCase()
+      
+      elements.push({
+        type: 'text',
+        content: trimmedLine,
+        fontSize: isHeading ? 18 : 13,
+        bold: isHeading,
+        align: 'left',
+        color: null
+      })
     }
-    
-    // Add table
-    const tableData = parseTableFromHTML(tableMatch[1])
-    elements.push({
-      type: 'table',
-      data: tableData
-    })
-    
-    currentIndex = tableMatch.index + tableMatch[0].length
   }
   
-  // Add remaining text after tables
-  const finalText = cleanText.slice(currentIndex).trim()
-  if (finalText) {
-    elements.push(...parseTextElements(finalText))
-  }
-  
-  // If no content was parsed, treat the whole thing as text
+  // If still no elements, add the whole text
   if (elements.length === 0) {
     elements.push({
       type: 'text',
@@ -273,20 +275,16 @@ function parseTextElements(text: string): any[] {
     }
   }
   
-  // If no HTML elements found, treat as plain text
-  if (elements.length === 0) {
-    // Remove any remaining HTML tags
-    const plainText = text.replace(/<[^>]*>/g, '').trim()
-    if (plainText) {
-      elements.push({
-        type: 'text',
-        content: plainText,
-        fontSize: 13,
-        bold: false,
-        align: 'left',
-        color: null
-      })
-    }
+  // Parse tables
+  const tableRegex = /<table[^>]*>(.*?)<\/table>/gis
+  let tableMatch
+  
+  while ((tableMatch = tableRegex.exec(text)) !== null) {
+    const tableData = parseTableFromHTML(tableMatch[1])
+    elements.push({
+      type: 'table',
+      data: tableData
+    })
   }
   
   return elements
