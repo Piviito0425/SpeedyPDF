@@ -153,32 +153,80 @@ function parseHTMLContent(html: string): any[] {
     return htmlElements
   }
   
-  // If no HTML elements found, treat as plain text
-  // Split by lines and create separate elements
-  const lines = cleanText.split('\n').filter(line => line.trim().length > 0)
+  // If no HTML elements found, parse as structured text (like ChatGPT)
+  return parseStructuredText(cleanText)
+}
+
+function parseStructuredText(text: string): any[] {
+  const elements: any[] = []
+  const lines = text.split('\n').filter(line => line.trim().length > 0)
   
-  for (const line of lines) {
-    const trimmedLine = line.trim()
-    if (trimmedLine) {
-      // Check if it looks like a heading (all caps, short)
-      const isHeading = trimmedLine.length < 50 && trimmedLine === trimmedLine.toUpperCase()
-      
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim()
+    if (!line) continue
+    
+    // Detect title (first line, usually longer and descriptive)
+    if (i === 0 && line.length > 20) {
       elements.push({
         type: 'text',
-        content: trimmedLine,
-        fontSize: isHeading ? 18 : 13,
-        bold: isHeading,
+        content: line,
+        fontSize: 20,
+        bold: true,
         align: 'left',
         color: null
       })
+      continue
     }
-  }
-  
-  // If still no elements, add the whole text
-  if (elements.length === 0) {
+    
+    // Detect section headers (short, all caps, or ending with colon)
+    const isHeader = (
+      (line.length < 30 && line === line.toUpperCase()) ||
+      line.endsWith(':') ||
+      line.match(/^(Resumen|Contexto|Reto|Acción|Resultados|Conclusión|Moral|Puntos Clave|Introducción|Desarrollo|Conclusión):?$/i)
+    )
+    
+    if (isHeader) {
+      elements.push({
+        type: 'text',
+        content: line,
+        fontSize: 16,
+        bold: true,
+        align: 'left',
+        color: null
+      })
+      continue
+    }
+    
+    // Detect numbered lists (1. 2. 3. etc.)
+    if (line.match(/^\d+\.\s/)) {
+      elements.push({
+        type: 'text',
+        content: line,
+        fontSize: 13,
+        bold: false,
+        align: 'left',
+        color: null
+      })
+      continue
+    }
+    
+    // Detect bullet points (• - * etc.)
+    if (line.match(/^[•\-\*]\s/)) {
+      elements.push({
+        type: 'text',
+        content: line,
+        fontSize: 13,
+        bold: false,
+        align: 'left',
+        color: null
+      })
+      continue
+    }
+    
+    // Regular paragraph text
     elements.push({
       type: 'text',
-      content: cleanText || "(sin contenido)",
+      content: line,
       fontSize: 13,
       bold: false,
       align: 'left',
