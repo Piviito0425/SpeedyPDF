@@ -1,4 +1,6 @@
 export const runtime = "nodejs"
+export const dynamic = "force-dynamic"
+export const maxDuration = 60
 
 import PDFDocument from "pdfkit"
 
@@ -51,7 +53,10 @@ export async function POST(req: Request) {
       },
     })
   } catch (e: any) {
-    return new Response(JSON.stringify({ error: e?.message || "PDF error" }), { status: 500 })
+    return new Response(JSON.stringify({ error: e?.message || "PDF error", stack: e?.stack }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    })
   }
 }
 

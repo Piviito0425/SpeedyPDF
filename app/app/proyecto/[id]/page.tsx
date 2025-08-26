@@ -23,6 +23,7 @@ export default function ProjectEditorPage({ params }: { params: { id: string } }
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [pdfUrl, setPdfUrl] = useState<string | null>(null)
+  const [aiLoading, setAiLoading] = useState(false)
   const [projectName, setProjectName] = useState("Manual de usuario")
   const { toast } = useToast()
 
@@ -60,12 +61,42 @@ export default function ProjectEditorPage({ params }: { params: { id: string } }
 
     const res = await fetch("/api/pdf/compose", { method: "POST", body: fd })
     if (!res.ok) {
-      toast({ title: "Error", description: "PDF compose falló" })
+      let msg = "PDF compose falló"
+      try { msg = (await res.text()) || msg } catch {}
+      toast({ title: "Error", description: msg })
       return
     }
     const blob = await res.blob()
     const url = URL.createObjectURL(blob)
+    if (pdfUrl) URL.revokeObjectURL(pdfUrl)
     setPdfUrl(url)
+  }
+
+  async function handleAISummarize() {
+    if (!text.trim()) {
+      toast({ title: "Sin contenido", description: "Escribe o pega texto antes de resumir." })
+      return
+    }
+    setAiLoading(true)
+    try {
+      const res = await fetch("/api/ai-summarize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ markdown: text }),
+      })
+      if (!res.ok) {
+        const msg = await res.text()
+        throw new Error(msg || "Fallo al generar el resumen")
+      }
+      const data = await res.json()
+      const out = data.markdown as string
+      setText(out || text)
+      toast({ title: "Resumen aplicado", description: "Actualicé el editor con el resumen." })
+    } catch (e: any) {
+      toast({ title: "Error", description: e?.message || "No se pudo generar el resumen" })
+    } finally {
+      setAiLoading(false)
+    }
   }
 
   return (
@@ -100,7 +131,9 @@ export default function ProjectEditorPage({ params }: { params: { id: string } }
                 <GitBranch className="h-4 w-4 mr-2" />
                 Crear versión
               </Button>
-              {/* Botones de IA / exportación removidos en este MVP */}
+              <Button variant="secondary" onClick={handleAISummarize} disabled={aiLoading}>
+                {aiLoading ? "Resumiendo..." : "Resumir con IA"}
+              </Button>
             </div>
           </div>
         </div>
