@@ -21,37 +21,48 @@ export async function POST(req: NextRequest) {
       "Genera resúmenes CLAROS, ORGANIZADOS y FÁCILES DE LEER.",
       "",
       "ESTRUCTURA OBLIGATORIA:",
-      "1. TÍTULO DEL RESUMEN (sin caracteres especiales)",
-      "2. RESUMEN EJECUTIVO (2-3 párrafos)",
-      "3. PUNTOS CLAVE (lista con viñetas)",
+      "1. TÍTULO DEL RESUMEN (en mayúsculas, sin caracteres especiales)",
+      "2. RESUMEN EJECUTIVO (2-3 párrafos separados por líneas en blanco)",
+      "3. PUNTOS CLAVE (lista numerada o con viñetas)",
       "4. CONCLUSIONES (opcional, si aplica)",
       "",
       "REGLAS IMPORTANTES:",
-      "- NO uses caracteres como #, *, -, etc. en el texto visible",
-      "- Usa párrafos bien estructurados y separados por líneas en blanco",
-      "- Las listas deben usar viñetas simples (•) o números",
+      "- SIEMPRE usa líneas en blanco para separar secciones",
+      "- Cada párrafo debe estar separado por una línea en blanco",
+      "- Los puntos clave deben estar en líneas separadas",
       "- Longitud objetivo: 200-400 palabras",
       "- Mantén un tono profesional pero accesible",
       "- No inventes información que no esté en el texto original",
+      "- Usa HTML básico para formato: <br> para saltos de línea, <strong> para negritas",
       "",
-      "FORMATO DE SALIDA:",
+      "FORMATO DE SALIDA EXACTO:",
       "TÍTULO DEL RESUMEN",
       "",
       "RESUMEN EJECUTIVO",
-      "[2-3 párrafos bien estructurados]",
+      "",
+      "[Primer párrafo del resumen]",
+      "",
+      "[Segundo párrafo del resumen]",
       "",
       "PUNTOS CLAVE",
-      "• [Punto 1]",
-      "• [Punto 2]",
-      "• [Punto 3]",
+      "",
+      "1. [Primer punto clave]",
+      "2. [Segundo punto clave]",
+      "3. [Tercer punto clave]",
       "",
       "CONCLUSIONES",
-      "[Si aplica, un párrafo final]"
+      "",
+      "[Párrafo de conclusiones]"
     ].join("\n")
 
     const user = [
       "Texto original a resumir:",
+      "",
       text,
+      "",
+      "IMPORTANTE: Genera el resumen siguiendo EXACTAMENTE el formato especificado.",
+      "Asegúrate de usar líneas en blanco para separar secciones y párrafos.",
+      "El resultado debe ser fácil de leer y bien estructurado."
     ].join("\n")
 
     // Llamada al endpoint de Chat Completions (OpenAI)
@@ -67,8 +78,8 @@ export async function POST(req: NextRequest) {
           { role: "system", content: system },
           { role: "user", content: user },
         ],
-        temperature: 0.3,
-        max_tokens: 500
+        temperature: 0.1,
+        max_tokens: 800
       }),
     })
 
