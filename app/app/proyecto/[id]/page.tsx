@@ -17,8 +17,8 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [pdfUrl, setPdfUrl] = useState<string | null>(null)
   const [template, setTemplate] = useState<"classic" | "compact">("classic")
-  const [textColor, setTextColor] = useState("#000000")
-  const [bgColor, setBgColor] = useState("#ffffff")
+  const [textColor, setTextColor] = useState("#FFFFFF")
+  const [bgColor, setBgColor] = useState("#000000")
   const [isLoading, setIsLoading] = useState(false)
   const [isSummarizing, setIsSummarizing] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -161,62 +161,6 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
             </CardContent>
           </Card>
 
-          {/* Image Upload */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Imagen del Documento</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div
-                className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-gray-400 transition-colors"
-                onDrop={handleDrop}
-                onDragOver={handleDragOver}
-                onClick={() => fileInputRef.current?.click()}
-              >
-                {imageUrl ? (
-                  <div className="space-y-4">
-                    <img
-                      src={imageUrl}
-                      alt="Preview"
-                      className="max-w-full h-32 object-contain mx-auto rounded"
-                    />
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setImageFile(null)
-                        setImageUrl(null)
-                        if (fileInputRef.current) fileInputRef.current.value = ""
-                      }}
-                    >
-                      Eliminar imagen
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                    <p className="text-gray-600">
-                      Arrastra una imagen aquí o haz clic para seleccionar
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      PNG, JPG hasta 10MB
-                    </p>
-                  </div>
-                )}
-              </div>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={(e) => {
-                  const file = e.target.files?.[0]
-                  if (file) handleImageUpload(file)
-                }}
-                className="hidden"
-              />
-            </CardContent>
-          </Card>
         </div>
 
         {/* Configuration Section */}
@@ -305,13 +249,60 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
             </CardContent>
           </Card>
 
-          {/* PDF Preview */}
+          {/* Image Upload */}
           <Card>
             <CardHeader>
-              <CardTitle>Previsualización</CardTitle>
+              <CardTitle>Imagen del Documento</CardTitle>
             </CardHeader>
             <CardContent>
-              <PdfInlineEditor pdfUrl={pdfUrl} />
+              <div
+                className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-gray-400 transition-colors"
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                {imageUrl ? (
+                  <div className="space-y-4">
+                    <img
+                      src={imageUrl}
+                      alt="Preview"
+                      className="max-w-full h-32 object-contain mx-auto rounded"
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setImageFile(null)
+                        setImageUrl(null)
+                        if (fileInputRef.current) fileInputRef.current.value = ""
+                      }}
+                    >
+                      Eliminar imagen
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Upload className="mx-auto h-12 w-12 text-gray-400" />
+                    <p className="text-gray-600">
+                      Arrastra una imagen aquí o haz clic para seleccionar
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      PNG, JPG hasta 10MB
+                    </p>
+                  </div>
+                )}
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0]
+                  if (file) handleImageUpload(file)
+                }}
+                className="hidden"
+              />
             </CardContent>
           </Card>
         </div>

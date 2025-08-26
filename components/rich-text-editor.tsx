@@ -43,18 +43,15 @@ export default function RichTextEditor({ content, onChange, onImageUpload }: Ric
   const [isBold, setIsBold] = useState(false)
   const [isItalic, setIsItalic] = useState(false)
   const [isUnderline, setIsUnderline] = useState(false)
-  const [fontFamily, setFontFamily] = useState("Inter")
+  const [fontFamily, setFontFamily] = useState("Arial")
   const [fontSize, setFontSize] = useState("16")
-  const [textColor, setTextColor] = useState("#000000")
+  const [textColor, setTextColor] = useState("#FFFFFF")
   const [alignment, setAlignment] = useState<"left" | "center" | "right" | "justify">("left")
   const [wordCount, setWordCount] = useState(0)
 
   const fonts = [
-    { value: "Inter", label: "Inter" },
     { value: "Arial", label: "Arial" },
-    { value: "Times New Roman", label: "Times New Roman" },
-    { value: "Helvetica", label: "Helvetica" },
-    { value: "Georgia", label: "Georgia" }
+    { value: "Times New Roman", label: "Times New Roman" }
   ]
 
   const fontSizes = ["12", "14", "16", "18", "20", "24", "28", "32", "36", "48", "56", "64", "72"]
@@ -323,19 +320,20 @@ export default function RichTextEditor({ content, onChange, onImageUpload }: Ric
       {/* Editor */}
       <Card>
         <CardContent className="p-0">
-          <div
-            ref={editorRef}
-            contentEditable
-            onInput={handleInput}
-            onBlur={handleInput}
-            className="min-h-[400px] p-6 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
-            style={{
-              fontFamily: fontFamily,
-              fontSize: `${fontSize}px`,
-              color: textColor
-            }}
-            suppressContentEditableWarning
-          />
+                        <div
+                ref={editorRef}
+                contentEditable
+                onInput={handleInput}
+                onBlur={handleInput}
+                className="min-h-[400px] p-6 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
+                style={{
+                  fontFamily: fontFamily,
+                  fontSize: `${fontSize}px`,
+                  color: textColor,
+                  backgroundColor: "#000000"
+                }}
+                suppressContentEditableWarning
+              />
         </CardContent>
       </Card>
 
