@@ -8,7 +8,7 @@ export const maxDuration = 60
   try {
     const { markdown } = await req.json()
      if (!markdown || typeof markdown !== "string") {
-      return NextResponse.json({ markdown: "#Resumen de prueba\n\nOk." });
+      return NextResponse.json({ markdown: "Resumen de prueba\n\nOk." });
     }
 
     const apiKey = process.env.OPENAI_API_KEY
@@ -17,18 +17,44 @@ export const maxDuration = 60
     }
 
     const system = [
-      "Eres un asistente que resume textos en ESPAÑOL.",
-      "Devuelve SIEMPRE Markdown válido.",
-      "Estructura: # Título, ## Resumen ejecutivo, ## Puntos clave (bullets), ## Riesgos/Limitaciones.",
-      "Longitud objetivo: 200-400 palabras.",
-      "No inventes datos que no estén en el texto original.",
+      "Eres un asistente experto en resumir textos en ESPAÑOL.",
+      "Genera resúmenes CLAROS, ORGANIZADOS y FÁCILES DE LEER.",
+      "",
+      "ESTRUCTURA OBLIGATORIA:",
+      "1. TÍTULO DEL RESUMEN (sin caracteres especiales)",
+      "2. RESUMEN EJECUTIVO (2-3 párrafos)",
+      "3. PUNTOS CLAVE (lista con viñetas)",
+      "4. CONCLUSIONES (opcional, si aplica)",
+      "",
+      "REGLAS IMPORTANTES:",
+      "- NO uses caracteres como #, *, -, etc. en el texto visible",
+      "- Usa párrafos bien estructurados y separados por líneas en blanco",
+      "- Las listas deben usar viñetas simples (•) o números",
+      "- Longitud objetivo: 200-400 palabras",
+      "- Mantén un tono profesional pero accesible",
+      "- No inventes información que no esté en el texto original",
+      "",
+      "FORMATO DE SALIDA:",
+      "TÍTULO DEL RESUMEN",
+      "",
+      "RESUMEN EJECUTIVO",
+      "[2-3 párrafos bien estructurados]",
+      "",
+      "PUNTOS CLAVE",
+      "• [Punto 1]",
+      "• [Punto 2]",
+      "• [Punto 3]",
+      "",
+      "CONCLUSIONES",
+      "[Si aplica, un párrafo final]"
     ].join("\n")
 
     const user = [
-      "Texto original en Markdown a resumir:",
-      "```markdown",
+      "Texto original a resumir:",
+      "",
       markdown,
-      "```",
+      "",
+      "Genera un resumen siguiendo exactamente la estructura y formato especificado."
     ].join("\n")
 
     // Llamada al endpoint de Chat Completions (OpenAI)
@@ -44,8 +70,8 @@ export const maxDuration = 60
           { role: "system", content: system },
           { role: "user", content: user },
         ],
-        temperature: 0.2,
-        max_tokens: 250
+        temperature: 0.3,
+        max_tokens: 500
       }),
     })
 
@@ -56,7 +82,7 @@ export const maxDuration = 60
 
     const data = await res.json()
     const markdownOut =
-      data?.choices?.[0]?.message?.content?.trim() || "# Resumen\n(No se pudo generar contenido)"
+      data?.choices?.[0]?.message?.content?.trim() || "Resumen\n\nNo se pudo generar contenido."
 
       // Uso y coste estimado (gpt-4o-mini): in $0.15/M, out $0.60/M
     const usage = data?.usage // { prompt_tokens, completion_tokens, total_tokens }

@@ -10,7 +10,7 @@ interface MarkdownPreviewProps {
 }
 
 export function MarkdownPreview({ content, template, brandColor = "#000000", backgroundColor }: MarkdownPreviewProps) {
-  // Conversión markdown muy simple manteniendo estructura de bloques
+  // Conversión markdown mejorada que detecta títulos automáticamente
   const parseMarkdown = (text: string) => {
     const applyInline = (line: string) => {
       return line
@@ -40,15 +40,36 @@ export function MarkdownPreview({ content, template, brandColor = "#000000", bac
       }
     }
 
-    for (const rawLine of lines) {
+    for (let i = 0; i < lines.length; i++) {
+      const rawLine = lines[i]
       const line = rawLine.trim()
+      
       if (line.length === 0) {
         flushList()
         continue
       }
 
-      // Listas no ordenadas: - o *
-      const ulMatch = /^(-|\*)\s+(.*)$/.exec(line)
+      // Detectar títulos automáticamente (líneas en mayúsculas que parecen títulos)
+      const isTitle = /^[A-ZÁÉÍÓÚÑ\s]+$/.test(line) && line.length > 3 && line.length < 100
+      const isSectionTitle = /^(RESUMEN EJECUTIVO|PUNTOS CLAVE|CONCLUSIONES|TÍTULO DEL RESUMEN)$/i.test(line)
+      
+      if (isTitle || isSectionTitle) {
+        flushList()
+        // Determinar el nivel del título basándose en el contexto
+        let headingLevel = 1
+        if (isSectionTitle) {
+          headingLevel = 2
+        } else if (line.length > 50) {
+          headingLevel = 3
+        }
+        
+        const tag = `h${headingLevel}`
+        htmlParts.push(`<${tag}>${applyInline(line)}</${tag}>`)
+        continue
+      }
+
+      // Listas no ordenadas: - o * o •
+      const ulMatch = /^(-|\*|•)\s+(.*)$/.exec(line)
       if (ulMatch) {
         const symbol = ulMatch[1]
         const itemText = ulMatch[2]
@@ -75,7 +96,7 @@ export function MarkdownPreview({ content, template, brandColor = "#000000", bac
         continue
       }
 
-      // Encabezados
+      // Encabezados tradicionales de markdown
       const h2Match = /^##\s+(.*)$/.exec(line)
       if (h2Match) {
         flushList()
