@@ -208,6 +208,18 @@ function parseTextElements(text: string): any[] {
       align: 'left',
       color: null
     })
+    
+    // Add extra space after headings
+    if (level === 2 || level === 3) {
+      elements.push({
+        type: 'text',
+        content: '',
+        fontSize: 13,
+        bold: false,
+        align: 'left',
+        color: null
+      })
+    }
   }
   
   // Parse paragraphs

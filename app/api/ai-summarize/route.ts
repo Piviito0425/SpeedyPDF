@@ -32,6 +32,8 @@ export async function POST(req: NextRequest) {
       "- USA SOLO HTML para el formato",
       "- Cada sección debe estar en un <h2> para el título y <h3> para las secciones",
       "- Cada párrafo debe estar en un <p>",
+      "- SIEMPRE incluye los dos puntos (:) después de cada sección",
+      "- SIEMPRE deja una línea en blanco entre secciones",
       "- Longitud objetivo: 300-500 palabras",
       "- Tono PROFESIONAL y EJECUTIVO",
       "- Estructura narrativa: Contexto → Reto → Acción → Resultados → Conclusión",
@@ -65,6 +67,7 @@ export async function POST(req: NextRequest) {
       "IMPORTANTE: Genera un resumen ejecutivo profesional usando EXACTAMENTE el formato narrativo especificado.",
       "Adapta el contenido al formato: Contexto → Reto → Acción → Resultados → Conclusión.",
       "Usa las etiquetas HTML correctas: <h2> para el título, <h3> para las secciones, <p> para párrafos.",
+      "SIEMPRE incluye los dos puntos (:) después de cada sección y deja líneas en blanco entre secciones.",
       "El resultado debe ser un documento ejecutivo profesional y bien estructurado."
     ].join("\n")
 
