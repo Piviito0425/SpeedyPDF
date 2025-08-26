@@ -38,12 +38,10 @@ export default function PdfInlineEditor({ pdfUrl }: Props) {
         // dynamic import to avoid SSR issues
         const mod = await import("pdfjs-dist")
         pdfjsLib = mod
-        // worker
-        const worker = await import("pdfjs-dist/build/pdf.worker.min.js?url")
-        pdfjsLib.GlobalWorkerOptions.workerSrc = worker.default
+        // En Next.js/webpack, evitamos bundle del worker usando modo sin worker
       }
 
-      const loadingTask = pdfjsLib.getDocument(pdfUrl)
+      const loadingTask = pdfjsLib.getDocument({ url: pdfUrl, disableWorker: true })
       const pdf = await loadingTask.promise
       const page = await pdf.getPage(1)
       const viewport = page.getViewport({ scale: 1.5 })
