@@ -24,6 +24,7 @@ export default function ProjectEditorPage({ params }: { params: { id: string } }
   const [content, setContent] = useState(initialContent)
   const [template, setTemplate] = useState<"classic" | "compact">("classic")
   const [brandColor, setBrandColor] = useState("#000000")
+  const [previewBg, setPreviewBg] = useState<string | undefined>(undefined)
   const [projectName, setProjectName] = useState("Manual de usuario")
   const [showExportDialog, setShowExportDialog] = useState(false)
   const [aiLoading, setAiLoading] = useState(false)              // ⬅️ nuevo
@@ -186,6 +187,25 @@ export default function ProjectEditorPage({ params }: { params: { id: string } }
                     />
                   </div>
                 </div>
+
+                <div>
+                  <Label htmlFor="bg-color">Color del fondo</Label>
+                  <div className="flex items-center space-x-2">
+                    <Input
+                      id="bg-color"
+                      type="color"
+                      value={previewBg ?? "#ffffff"}
+                      onChange={(e) => setPreviewBg(e.target.value)}
+                      className="w-12 h-10 p-1 border rounded"
+                    />
+                    <Input
+                      value={previewBg ?? "#ffffff"}
+                      onChange={(e) => setPreviewBg(e.target.value)}
+                      placeholder="#ffffff"
+                      className="flex-1"
+                    />
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
@@ -204,10 +224,10 @@ export default function ProjectEditorPage({ params }: { params: { id: string } }
             <Button size="sm" onClick={applyAiSummary}>Aplicar al editor</Button>
           </div>
         </div>
-        <MarkdownPreview content={aiPreview} template={template} brandColor={brandColor} />
+        <MarkdownPreview content={aiPreview} template={template} brandColor={brandColor} backgroundColor={previewBg} />
       </>
     ) : (
-      <MarkdownPreview content={content} template={template} brandColor={brandColor} />
+      <MarkdownPreview content={content} template={template} brandColor={brandColor} backgroundColor={previewBg} />
     )}
   </CardContent>
 </Card>

@@ -79,7 +79,6 @@ export function MarkdownEditor({ value, onChange, placeholder = "Escribe tu Mark
               <DropdownMenuItem onClick={() => insertText("# ")}>H1</DropdownMenuItem>
               <DropdownMenuItem onClick={() => insertText("## ")}>H2</DropdownMenuItem>
               <DropdownMenuItem onClick={() => insertText("### ")}>H3</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => insertText("#### ")}>H4</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
