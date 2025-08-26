@@ -158,7 +158,7 @@ export default function ProjectEditorPage({ params }: { params: { id: string } }
             {/* Markdown Editor */}
             <Card>
               <CardHeader>
-                <CardTitle>Editor</CardTitle>
+                <CardTitle>Editor de texto Markdown</CardTitle>
               </CardHeader>
               <CardContent>
                 <MarkdownEditor

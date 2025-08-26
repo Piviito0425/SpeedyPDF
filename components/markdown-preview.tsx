@@ -23,12 +23,19 @@ export function MarkdownPreview({ content, template, brandColor = "#000000" }: M
     const htmlParts: string[] = []
     let listBuffer: string[] = []
     let listType: 'ul' | 'ol' | null = null
+    let ulMarker: 'dash' | 'asterisk' | null = null
 
     const flushList = () => {
       if (listBuffer.length > 0 && listType) {
-        htmlParts.push(`<${listType}>${listBuffer.join("")}</${listType}>`)
+        if (listType === 'ul') {
+          const markAttr = ulMarker ? ` data-ulmark="${ulMarker}"` : ''
+          htmlParts.push(`<ul${markAttr}>${listBuffer.join("")}</ul>`)
+        } else {
+          htmlParts.push(`<ol>${listBuffer.join("")}</ol>`)
+        }
         listBuffer = []
         listType = null
+        ulMarker = null
       }
     }
 
@@ -40,12 +47,16 @@ export function MarkdownPreview({ content, template, brandColor = "#000000" }: M
       }
 
       // Listas no ordenadas: - o *
-      const ulMatch = /^(?:-|\*)\s+(.*)$/.exec(line)
+      const ulMatch = /^(-|\*)\s+(.*)$/.exec(line)
       if (ulMatch) {
-        const item = applyInline(ulMatch[1])
-        if (listType !== 'ul') {
+        const symbol = ulMatch[1]
+        const itemText = ulMatch[2]
+        const item = applyInline(itemText)
+        const currentMarker: 'dash' | 'asterisk' = symbol === '-' ? 'dash' : 'asterisk'
+        if (listType !== 'ul' || ulMarker !== currentMarker) {
           flushList()
           listType = 'ul'
+          ulMarker = currentMarker
         }
         listBuffer.push(`<li>${item}</li>`)
         continue
@@ -177,6 +188,12 @@ export function MarkdownPreview({ content, template, brandColor = "#000000" }: M
             list-style: disc;
             padding-left: 1.25rem;
             margin: 0 0 0.75rem 0;
+          }
+          [data-brand-preview] ul[data-ulmark="dash"] {
+            list-style: square;
+          }
+          [data-brand-preview] ul[data-ulmark="asterisk"] {
+            list-style: disc;
           }
           [data-brand-preview] li {
             margin: 0.25rem 0;

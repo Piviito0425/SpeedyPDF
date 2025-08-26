@@ -6,6 +6,12 @@ import { useState } from "react"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Bold, Italic, List, LinkIcon, ImageIcon, Heading2 } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface MarkdownEditorProps {
@@ -58,14 +64,24 @@ export function MarkdownEditor({ value, onChange, placeholder = "Escribe tu Mark
       {/* Toolbar */}
       <TooltipProvider>
         <div className="flex items-center space-x-1 p-2 border rounded-md bg-muted/50">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button size="sm" variant="ghost" onClick={() => insertText("## ")} aria-label="Encabezado 2">
-                <Heading2 className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Encabezado 2 (Ctrl+2)</TooltipContent>
-          </Tooltip>
+          <DropdownMenu>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DropdownMenuTrigger asChild>
+                  <Button size="sm" variant="ghost" aria-label="Encabezados">
+                    <Heading2 className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent>Encabezados</TooltipContent>
+            </Tooltip>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem onClick={() => insertText("# ")}>H1</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => insertText("## ")}>H2</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => insertText("### ")}>H3</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => insertText("#### ")}>H4</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           <Tooltip>
             <TooltipTrigger asChild>
@@ -85,14 +101,23 @@ export function MarkdownEditor({ value, onChange, placeholder = "Escribe tu Mark
             <TooltipContent>Cursiva (Ctrl+I)</TooltipContent>
           </Tooltip>
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button size="sm" variant="ghost" onClick={() => insertText("- ")} aria-label="Lista">
-                <List className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Lista</TooltipContent>
-          </Tooltip>
+          <DropdownMenu>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DropdownMenuTrigger asChild>
+                  <Button size="sm" variant="ghost" aria-label="Listas">
+                    <List className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent>Listas</TooltipContent>
+            </Tooltip>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem onClick={() => insertText("- ")}>Viñetas ( - )</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => insertText("* ")}>Viñetas ( * )</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => insertText("1. ")}>Numerada ( 1. )</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           <Tooltip>
             <TooltipTrigger asChild>
