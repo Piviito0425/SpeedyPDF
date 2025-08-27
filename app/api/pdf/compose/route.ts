@@ -165,7 +165,7 @@ function parseStructuredText(text: string): any[] {
     const line = lines[i].trim()
     if (!line) continue
     
-    // Detect Markdown headers (## Resumen, ## Moral)
+    // Detect Markdown headers (## Resumen)
     if (line.startsWith('## ')) {
       // Add space before header (except for first header)
       if (elements.length > 0) {

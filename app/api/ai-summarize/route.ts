@@ -6,7 +6,7 @@ export const maxDuration = 60
 
 export async function POST(req: NextRequest) {
   try {
-    const { text, title = "el cuento" } = await req.json()
+    const { text } = await req.json()
     if (!text || typeof text !== "string") {
       return NextResponse.json({ summary: "Resumen de prueba\n\nOk." });
     }
@@ -16,26 +16,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "OPENAI_API_KEY no configurada" }, { status: 500 })
     }
 
-    const system = `Eres un redactor claro y preciso. Debes devolver EXACTAMENTE el siguiente Markdown y nada más: 
-Aquí tienes un resumen fiel y conciso del cuento de «{{TITLE}}»:
+    const system = "Devuelve SOLO JSON válido con: intro (string), bullets (array de 4 strings cronológicas, una frase cada una). Español neutro. Nada fuera del JSON."
 
-## Resumen
-{{INTRO}}
-
-1. {{B1}}
-2. {{B2}}
-3. {{B3}}
-4. {{B4}}
-
-## Moral
-{{MORAL}}
-
-Reglas: usa español neutro; 120–160 palabras en total; 4 bullets numerados (no guiones); cada bullet una sola frase; {{MORAL}} no debe empezar por "Moral:". No añadas texto fuera del esquema.`
-
-    const user = `TITLE=${title}
-Texto a resumir:
-${text}
-Rellena las llaves del esquema. No cambies la plantilla ni añadas líneas.`
+    const user = `Resume el siguiente texto en 120–160 palabras en total. Mantén exactamente 4 bullets.\n\n${text}`
 
     // Llamada al endpoint de Chat Completions (OpenAI)
     const res = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -49,6 +32,7 @@ Rellena las llaves del esquema. No cambies la plantilla ni añadas líneas.`
         temperature: 0,
         top_p: 1,
         max_tokens: 600,
+        response_format: { "type": "json_object" },
         messages: [
           { role: "system", content: system },
           { role: "user", content: user },
@@ -62,8 +46,27 @@ Rellena las llaves del esquema. No cambies la plantilla ni añadas líneas.`
     }
 
     const data = await res.json()
-    const summary =
-      data?.choices?.[0]?.message?.content?.trim() || "Resumen\n(No se pudo generar contenido)"
+    const jsonContent = data?.choices?.[0]?.message?.content?.trim()
+    
+    if (!jsonContent) {
+      return NextResponse.json({ error: "No se pudo generar contenido" }, { status: 500 })
+    }
+
+    // Parse JSON response
+    let parsedData
+    try {
+      parsedData = JSON.parse(jsonContent)
+    } catch (e) {
+      return NextResponse.json({ error: "Respuesta JSON inválida de la IA" }, { status: 500 })
+    }
+
+    // Validate structure
+    if (!parsedData.intro || !Array.isArray(parsedData.bullets) || parsedData.bullets.length !== 4) {
+      return NextResponse.json({ error: "Estructura JSON inválida" }, { status: 500 })
+    }
+
+    // Render markdown summary
+    const summary = renderMarkdownSummary(parsedData)
 
     // Uso y coste estimado (gpt-4o-mini): in $0.15/M, out $0.60/M
     const usage = data?.usage // { prompt_tokens, completion_tokens, total_tokens }
@@ -74,4 +77,14 @@ Rellena las llaves del esquema. No cambies la plantilla ni añadas líneas.`
   } catch (e: any) {
     return NextResponse.json({ error: e.message ?? "Error inesperado" }, { status: 500 })
   }
+}
+
+function renderMarkdownSummary(d: { intro: string; bullets: string[] }) {
+  return `## Resumen
+${d.intro}
+
+1. ${d.bullets[0]}
+2. ${d.bullets[1]}
+3. ${d.bullets[2]}
+4. ${d.bullets[3]}`;
 }
