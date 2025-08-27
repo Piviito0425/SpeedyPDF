@@ -165,37 +165,9 @@ function parseStructuredText(text: string): any[] {
     const line = lines[i].trim()
     if (!line) continue
     
-    // Detect title (first line, usually longer and descriptive)
-    if (i === 0 && line.length > 20) {
-      elements.push({
-        type: 'text',
-        content: line,
-        fontSize: 20,
-        bold: true,
-        align: 'left',
-        color: null
-      })
-      // Add extra space after title
-      elements.push({
-        type: 'text',
-        content: '',
-        fontSize: 13,
-        bold: false,
-        align: 'left',
-        color: null
-      })
-      continue
-    }
-    
-    // Detect section headers (short, all caps, or ending with colon)
-    const isHeader = (
-      (line.length < 30 && line === line.toUpperCase()) ||
-      line.endsWith(':') ||
-      line.match(/^(Resumen|Contexto|Reto|Acción|Resultados|Conclusión|Moral|Puntos Clave|Introducción|Desarrollo|Conclusión):?$/i)
-    )
-    
-    if (isHeader) {
-      // Add space before header (except for first header)
+    // Detect "Moral:" line (should be at the end)
+    if (line.startsWith('Moral:')) {
+      // Add space before Moral
       if (elements.length > 0) {
         elements.push({
           type: 'text',
@@ -215,11 +187,14 @@ function parseStructuredText(text: string): any[] {
         align: 'left',
         color: null
       })
-      
-      // Add space after header
+      continue
+    }
+    
+    // Detect bullet points (• - * etc.)
+    if (line.match(/^[•\-\*]\s/)) {
       elements.push({
         type: 'text',
-        content: '',
+        content: line,
         fontSize: 13,
         bold: false,
         align: 'left',
@@ -241,40 +216,6 @@ function parseStructuredText(text: string): any[] {
       continue
     }
     
-    // Detect bullet points (• - * etc.)
-    if (line.match(/^[•\-\*]\s/)) {
-      elements.push({
-        type: 'text',
-        content: line,
-        fontSize: 13,
-        bold: false,
-        align: 'left',
-        color: null
-      })
-      continue
-    }
-    
-    // Detect if this is a short line that might be a sub-header
-    const isSubHeader = line.length < 50 && (
-      line.endsWith('.') === false && 
-      line.endsWith('!') === false && 
-      line.endsWith('?') === false &&
-      !line.includes(',') &&
-      !line.includes(';')
-    )
-    
-    if (isSubHeader && line.length > 10) {
-      elements.push({
-        type: 'text',
-        content: line,
-        fontSize: 14,
-        bold: true,
-        align: 'left',
-        color: null
-      })
-      continue
-    }
-    
     // Regular paragraph text
     elements.push({
       type: 'text',
@@ -285,8 +226,8 @@ function parseStructuredText(text: string): any[] {
       color: null
     })
     
-    // Add space after paragraphs (but not after lists or short lines)
-    if (!line.match(/^\d+\.\s/) && !line.match(/^[•\-\*]\s/) && line.length > 30) {
+    // Add space after paragraphs (but not after lists)
+    if (!line.match(/^\d+\.\s/) && !line.match(/^[•\-\*]\s/) && !line.startsWith('Moral:')) {
       elements.push({
         type: 'text',
         content: '',

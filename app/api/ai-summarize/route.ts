@@ -16,60 +16,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "OPENAI_API_KEY no configurada" }, { status: 500 })
     }
 
-    const system = [
-      "Eres un asistente experto en crear resúmenes ejecutivos profesionales en ESPAÑOL.",
-      "Genera resúmenes con estructura de NARRATIVA PROFESIONAL, similar a un caso de estudio empresarial.",
-      "",
-      "ESTRUCTURA OBLIGATORIA (formato narrativo):",
-      "1. TÍTULO: 'Resumen Ejecutivo – [Nombre del tema]'",
-      "2. CONTEXTO: Situación inicial y antecedentes",
-      "3. RETO: Problema o desafío principal",
-      "4. ACCIÓN: Estrategias y acciones implementadas",
-      "5. RESULTADOS: Consecuencias y logros obtenidos",
-      "6. CONCLUSIÓN: Reflexión final y aprendizajes",
-      "",
-      "REGLAS IMPORTANTES:",
-      "- USA SOLO HTML para el formato",
-      "- Cada sección debe estar en un <h2> para el título y <h3> para las secciones",
-      "- Cada párrafo debe estar en un <p>",
-      "- SIEMPRE incluye los dos puntos (:) después de cada sección",
-      "- SIEMPRE deja una línea en blanco entre secciones",
-      "- Longitud objetivo: 300-500 palabras",
-      "- Tono PROFESIONAL y EJECUTIVO",
-      "- Estructura narrativa: Contexto → Reto → Acción → Resultados → Conclusión",
-      "- No inventes información que no esté en el texto original",
-      "- Adapta el contenido al formato de caso de estudio",
-      "",
-      "FORMATO DE SALIDA EXACTO (HTML):",
-      "<h2>Resumen Ejecutivo – [Título del tema]</h2>",
-      "",
-      "<h3>Contexto:</h3>",
-      "<p>[Descripción de la situación inicial y antecedentes]</p>",
-      "",
-      "<h3>Reto:</h3>",
-      "<p>[Descripción del problema o desafío principal]</p>",
-      "",
-      "<h3>Acción:</h3>",
-      "<p>[Descripción de las estrategias y acciones implementadas]</p>",
-      "",
-      "<h3>Resultados:</h3>",
-      "<p>[Descripción de las consecuencias y logros obtenidos]</p>",
-      "",
-      "<h3>Conclusión:</h3>",
-      "<p>[Reflexión final y aprendizajes clave]</p>"
-    ].join("\n")
+    const system = "Eres un redactor claro y conciso. Escribe en español neutro. Responde en viñetas y termina con una línea \"Moral: …\"."
 
-    const user = [
-      "Texto original a resumir:",
-      "",
-      text,
-      "",
-      "IMPORTANTE: Genera un resumen ejecutivo profesional usando EXACTAMENTE el formato narrativo especificado.",
-      "Adapta el contenido al formato: Contexto → Reto → Acción → Resultados → Conclusión.",
-      "Usa las etiquetas HTML correctas: <h2> para el título, <h3> para las secciones, <p> para párrafos.",
-      "SIEMPRE incluye los dos puntos (:) después de cada sección y deja líneas en blanco entre secciones.",
-      "El resultado debe ser un documento ejecutivo profesional y bien estructurado."
-    ].join("\n")
+    const user = `Resume el siguiente texto en 120-160 palabras:\n\n${text}`
 
     // Llamada al endpoint de Chat Completions (OpenAI)
     const res = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -79,13 +28,14 @@ export async function POST(req: NextRequest) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini", // rápido/barato; cambia si prefieres otro
+        model: "gpt-4o-mini",
         messages: [
           { role: "system", content: system },
           { role: "user", content: user },
         ],
-        temperature: 0.1,
-        max_tokens: 800
+        temperature: 0.2,
+        top_p: 1,
+        max_tokens: 500
       }),
     })
 
