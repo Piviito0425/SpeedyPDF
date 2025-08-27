@@ -17,6 +17,7 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [pdfUrl, setPdfUrl] = useState<string | null>(null)
   const [summaryPdfUrl, setSummaryPdfUrl] = useState<string | null>(null)
+  const [summaryType, setSummaryType] = useState<string | null>(null)
   const [template, setTemplate] = useState<"classic" | "compact">("classic")
   const [textColor, setTextColor] = useState("#FFFFFF")
   const [bgColor, setBgColor] = useState("#000000")
@@ -121,6 +122,10 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
 
       const data = await response.json()
       const summary = data.summary
+      const type = data.type
+      
+      // Guardar el tipo de documento detectado
+      setSummaryType(type)
       
       // Luego generar PDF del resumen
       const formData = new FormData()
@@ -174,9 +179,20 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
         <div className="lg:col-span-2 space-y-6">
           {/* PDF Preview */}
           <Card>
-            <CardHeader>
-              <CardTitle>Previsualización</CardTitle>
-            </CardHeader>
+                         <CardHeader>
+               <CardTitle className="flex items-center gap-2">
+                 <span>Previsualización</span>
+                 {summaryType && (
+                   <div className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                     {summaryType === 'meeting' && '📋 Reunión'}
+                     {summaryType === 'narrative' && '📖 Narrativa'}
+                     {summaryType === 'news/article' && '📰 Artículo'}
+                     {summaryType === 'technical_report' && '📊 Técnico'}
+                     {summaryType === 'generic' && '📄 Genérico'}
+                   </div>
+                 )}
+               </CardTitle>
+             </CardHeader>
             <CardContent>
               <PdfInlineEditor pdfUrl={summaryPdfUrl || pdfUrl} />
             </CardContent>
