@@ -174,31 +174,33 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
         <div className="text-sm text-gray-500">Proyecto: {params.id}</div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Editor Section */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* PDF Preview */}
-          <Card>
-                         <CardHeader>
-               <CardTitle className="flex items-center gap-2">
-                 <span>Previsualización</span>
-                 {summaryType && (
-                   <div className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                     {summaryType === 'meeting' && '📋 Reunión'}
-                     {summaryType === 'narrative' && '📖 Narrativa'}
-                     {summaryType === 'news/article' && '📰 Artículo'}
-                     {summaryType === 'technical_report' && '📊 Técnico'}
-                     {summaryType === 'generic' && '📄 Genérico'}
-                   </div>
-                 )}
-               </CardTitle>
-             </CardHeader>
-            <CardContent>
-              <PdfInlineEditor pdfUrl={summaryPdfUrl || pdfUrl} />
+      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+        {/* PDF Preview - Mucho más grande */}
+        <div className="xl:col-span-3">
+          <Card className="h-[80vh]">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <span>Previsualización del PDF</span>
+                {summaryType && (
+                  <div className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                    {summaryType === 'meeting' && '📋 Reunión'}
+                    {summaryType === 'narrative' && '📖 Narrativa'}
+                    {summaryType === 'news/article' && '📰 Artículo'}
+                    {summaryType === 'technical_report' && '📊 Técnico'}
+                    {summaryType === 'generic' && '📄 Genérico'}
+                  </div>
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="h-full p-0">
+              <div className="h-full">
+                <PdfInlineEditor pdfUrl={summaryPdfUrl || pdfUrl} />
+              </div>
             </CardContent>
           </Card>
 
-          <Card>
+          {/* Editor Section - Debajo del PDF */}
+          <Card className="mt-6">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <span>Editor</span>
@@ -212,11 +214,10 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
               />
             </CardContent>
           </Card>
-
         </div>
 
         {/* Configuration Section */}
-        <div className="space-y-6">
+        <div className="xl:col-span-1 space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Configuración</CardTitle>

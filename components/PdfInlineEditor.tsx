@@ -11,7 +11,7 @@ export default function PdfInlineEditor({ pdfUrl }: Props) {
 
   if (!pdfUrl) {
     return (
-      <div className="flex items-center justify-center h-64 border-2 border-dashed border-gray-300 rounded-lg">
+      <div className="flex items-center justify-center h-full border-2 border-dashed border-gray-300 rounded-lg">
         <p className="text-gray-500">Genera una previsualización para ver el PDF</p>
       </div>
     )
@@ -24,11 +24,11 @@ export default function PdfInlineEditor({ pdfUrl }: Props) {
         <p className="text-xs text-gray-500">Vista previa de cómo se verá tu documento</p>
       </div>
       
-      <div className="flex justify-center">
-        <div className="border rounded-lg shadow-sm overflow-hidden bg-white w-full max-w-2xl">
+      <div className="flex justify-center h-full">
+        <div className="border rounded-lg shadow-sm overflow-hidden bg-white w-full h-full">
           <iframe
             src={pdfUrl}
-            className="w-full h-96"
+            className="w-full h-full"
             onLoad={() => setIsLoading(false)}
             onLoadStart={() => setIsLoading(true)}
             style={{ border: 'none' }}
