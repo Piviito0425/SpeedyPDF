@@ -24,8 +24,15 @@ export async function routeDocType(text: string): Promise<RouteResult> {
       {
         role: "system",
         content:
-          "Devuelve SOLO JSON con {type, confidence, reason}. 'type' ∈ " +
-          "['meeting','narrative','news/article','legal/policy','email_thread','technical_report','generic'].",
+          "Clasifica el texto en uno de estos tipos:\n" +
+          "- 'meeting': Transcripciones de reuniones, conversaciones entre personas, minutas\n" +
+          "- 'narrative': Cuentos, historias, relatos, narrativas, descripciones de personajes/eventos\n" +
+          "- 'news/article': Noticias, artículos informativos, reportes de actualidad, análisis técnico\n" +
+          "- 'technical_report': Documentos técnicos, manuales, especificaciones, documentación\n" +
+          "- 'legal/policy': Documentos legales, políticas, términos y condiciones\n" +
+          "- 'email_thread': Conversaciones por email, hilos de correo\n" +
+          "- 'generic': Otros tipos de texto\n\n" +
+          "Devuelve SOLO JSON con {type, confidence, reason}. Usa 'narrative' para cuentos e historias.",
       },
       {
         role: "user",
@@ -65,18 +72,18 @@ export async function summarizeMeeting(text: string): Promise<MeetingJSON> {
 }
 
 export function renderMeetingMD(d: MeetingJSON) {
-  const head = d.title ? `### ${d.title}\n\n` : "";
+  const head = d.title ? `${d.title}\n\n` : "";
   const secs = d.sections
     .map(
       (s, i) =>
-        `${i + 1}. **${s.title}**\n` + s.bullets.map((b) => `   - ${b}`).join("\n")
+        `${i + 1}. ${s.title}\n` + s.bullets.map((b) => `   - ${b}`).join("\n")
     )
     .join("\n\n");
   const decisions = d.decisions?.length
-    ? `\n\n**Acuerdos finales**\n` + d.decisions.map((x) => `- ${x}`).join("\n")
+    ? `\n\nAcuerdos finales:\n` + d.decisions.map((x) => `- ${x}`).join("\n")
     : "";
   const tasks = d.action_items?.length
-    ? `\n\n**Tareas asignadas**\n` +
+    ? `\n\nTareas asignadas:\n` +
       d.action_items
         .map(
           (t) =>
@@ -86,7 +93,7 @@ export function renderMeetingMD(d: MeetingJSON) {
         )
         .join("\n")
     : "";
-  return `${head}**Resumen de la reunión**\n\n${secs}${decisions}${tasks}`.trim();
+  return `${head}Resumen de la reunión\n\n${secs}${decisions}${tasks}`.trim();
 }
 
 // Narrativa/cuento
@@ -101,11 +108,12 @@ export async function summarizeNarrative(text: string): Promise<NarrativeJSON> {
       {
         role: "system",
         content:
-          "Devuelve SOLO JSON con {synopsis: string (2-3 frases), bullets: string[4]}.",
+          "Devuelve SOLO JSON con {synopsis: string (2-3 frases descriptivas), bullets: string[4] (puntos clave cronológicos)}. " +
+          "Para cuentos e historias, enfócate en la narrativa y los eventos principales.",
       },
       {
         role: "user",
-        content: `Resume este cuento en sinopsis + 4 bullets:\n${text.slice(0, 16000)}`,
+        content: `Resume esta historia/narrativa en sinopsis + 4 puntos clave:\n${text.slice(0, 16000)}`,
       },
     ],
   });
@@ -113,7 +121,7 @@ export async function summarizeNarrative(text: string): Promise<NarrativeJSON> {
 }
 
 export const renderNarrativeMD = (d: NarrativeJSON) =>
-  `## Resumen\n${d.synopsis}\n\n1. ${d.bullets[0]}\n2. ${d.bullets[1]}\n3. ${d.bullets[2]}\n4. ${d.bullets[3]}`;
+  `Resumen\n${d.synopsis}\n\n1. ${d.bullets[0]}\n2. ${d.bullets[1]}\n3. ${d.bullets[2]}\n4. ${d.bullets[3]}`;
 
 // Artículo/noticia genérica
 export async function summarizeArticle(text: string): Promise<ArticleJSON> {
@@ -139,9 +147,9 @@ export async function summarizeArticle(text: string): Promise<ArticleJSON> {
 }
 
 export const renderArticleMD = (d: ArticleJSON) =>
-  `**TL;DR:** ${d.tldr}\n\n**Claves:**\n${d.claves
+  `Resumen: ${d.tldr}\n\nPuntos clave:\n${d.claves
     .map((x) => `- ${x}`)
-    .join("\n")}${d.cifras?.length ? `\n\n**Cifras:**\n${d.cifras.map((x) => `- ${x}`).join("\n")}` : ""}`;
+    .join("\n")}${d.cifras?.length ? `\n\nDatos importantes:\n${d.cifras.map((x) => `- ${x}`).join("\n")}` : ""}`;
 
 // 3. Orquestador adaptativo
 export async function summarizeAdaptive(text: string): Promise<SummaryResult> {
