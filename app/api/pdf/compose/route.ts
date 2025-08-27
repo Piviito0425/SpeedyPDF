@@ -130,7 +130,8 @@ function wrapLine(line: string, maxWidth: number, fontSize: number, font: any): 
     return out
   } catch (e) {
     // Fallback: split by characters if font encoding fails
-    const chars = Math.floor(maxWidth / (fontSize * 0.6))
+    // Use a more conservative character width for Spanish characters
+    const chars = Math.floor(maxWidth / (fontSize * 0.7))
     const out: string[] = []
     for (let i = 0; i < line.length; i += chars) {
       out.push(line.slice(i, i + chars))
@@ -142,11 +143,8 @@ function wrapLine(line: string, maxWidth: number, fontSize: number, font: any): 
 function parseHTMLContent(html: string): any[] {
   const elements: any[] = []
   
-  // Clean text and remove non-ASCII characters
-  const cleanText = html.replace(/[^\x00-\x7F]/g, "")
-  
   // First, try to parse as HTML
-  const htmlElements = parseTextElements(cleanText)
+  const htmlElements = parseTextElements(html)
   
   if (htmlElements.length > 0) {
     // HTML was found, use it
@@ -154,7 +152,7 @@ function parseHTMLContent(html: string): any[] {
   }
   
   // If no HTML elements found, parse as structured text (like ChatGPT)
-  return parseStructuredText(cleanText)
+  return parseStructuredText(html)
 }
 
 function parseStructuredText(text: string): any[] {
