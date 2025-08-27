@@ -111,6 +111,19 @@ function hexToRgb(hex: string): [number, number, number] {
   return [parseInt(m[1] || "00", 16), parseInt(m[2] || "00", 16), parseInt(m[3] || "00", 16)]
 }
 
+function cleanMarkdown(text: string): string {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '$1') // Remove **bold**
+    .replace(/\*(.*?)\*/g, '$1')     // Remove *italic*
+    .replace(/`(.*?)`/g, '$1')       // Remove `code`
+    .replace(/\[(.*?)\]\(.*?\)/g, '$1') // Remove [link](url) -> link
+    .replace(/^#{1,6}\s+/g, '')      // Remove # headers
+    .replace(/^>\s+/g, '')           // Remove > blockquotes
+    .replace(/^\|\s+/g, '')          // Remove | table separators
+    .replace(/\|\s*$/g, '')          // Remove trailing |
+    .trim()
+}
+
 function wrapLine(line: string, maxWidth: number, fontSize: number, font: any): string[] {
   try {
     const words = line.split(/\s+/)
@@ -202,7 +215,7 @@ function parseStructuredText(text: string): any[] {
     if (line.match(/^\d+\.\s/)) {
       elements.push({
         type: 'text',
-        content: line,
+        content: cleanMarkdown(line),
         fontSize: 13,
         bold: false,
         align: 'left',
@@ -215,7 +228,7 @@ function parseStructuredText(text: string): any[] {
     if (line.match(/^[•\-\*]\s/)) {
       elements.push({
         type: 'text',
-        content: line,
+        content: cleanMarkdown(line),
         fontSize: 13,
         bold: false,
         align: 'left',
@@ -227,7 +240,7 @@ function parseStructuredText(text: string): any[] {
     // Regular paragraph text
     elements.push({
       type: 'text',
-      content: line,
+      content: cleanMarkdown(line),
       fontSize: 13,
       bold: false,
       align: 'left',
