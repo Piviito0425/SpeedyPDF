@@ -106,13 +106,17 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
 
     setIsSummarizing(true)
     try {
+      // Extraer título del texto (primera línea o "el cuento" por defecto)
+      const lines = text.split('\n').filter(line => line.trim().length > 0)
+      const title = lines.length > 0 ? lines[0].trim().replace(/[^\w\s]/g, '').substring(0, 50) : "el cuento"
+      
       // Primero obtener el resumen
       const response = await fetch("/api/ai-summarize", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text, title }),
       })
 
       if (!response.ok) {

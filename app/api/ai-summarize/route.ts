@@ -6,7 +6,7 @@ export const maxDuration = 60
 
 export async function POST(req: NextRequest) {
   try {
-    const { text } = await req.json()
+    const { text, title = "el cuento" } = await req.json()
     if (!text || typeof text !== "string") {
       return NextResponse.json({ summary: "Resumen de prueba\n\nOk." });
     }
@@ -16,9 +16,26 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "OPENAI_API_KEY no configurada" }, { status: 500 })
     }
 
-    const system = "Eres un redactor claro y conciso. Escribe en español neutro. Responde en viñetas y termina con una línea \"Moral: …\"."
+    const system = `Eres un redactor claro y preciso. Debes devolver EXACTAMENTE el siguiente Markdown y nada más: 
+Aquí tienes un resumen fiel y conciso del cuento de «{{TITLE}}»:
 
-    const user = `Resume el siguiente texto en 120-160 palabras:\n\n${text}`
+## Resumen
+{{INTRO}}
+
+1. {{B1}}
+2. {{B2}}
+3. {{B3}}
+4. {{B4}}
+
+## Moral
+{{MORAL}}
+
+Reglas: usa español neutro; 120–160 palabras en total; 4 bullets numerados (no guiones); cada bullet una sola frase; {{MORAL}} no debe empezar por "Moral:". No añadas texto fuera del esquema.`
+
+    const user = `TITLE=${title}
+Texto a resumir:
+${text}
+Rellena las llaves del esquema. No cambies la plantilla ni añadas líneas.`
 
     // Llamada al endpoint de Chat Completions (OpenAI)
     const res = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -29,13 +46,13 @@ export async function POST(req: NextRequest) {
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",
+        temperature: 0,
+        top_p: 1,
+        max_tokens: 600,
         messages: [
           { role: "system", content: system },
           { role: "user", content: user },
-        ],
-        temperature: 0.2,
-        top_p: 1,
-        max_tokens: 500
+        ]
       }),
     })
 

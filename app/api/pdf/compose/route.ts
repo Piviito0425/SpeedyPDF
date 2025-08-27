@@ -165,9 +165,9 @@ function parseStructuredText(text: string): any[] {
     const line = lines[i].trim()
     if (!line) continue
     
-    // Detect "Moral:" line (should be at the end)
-    if (line.startsWith('Moral:')) {
-      // Add space before Moral
+    // Detect Markdown headers (## Resumen, ## Moral)
+    if (line.startsWith('## ')) {
+      // Add space before header (except for first header)
       if (elements.length > 0) {
         elements.push({
           type: 'text',
@@ -181,17 +181,27 @@ function parseStructuredText(text: string): any[] {
       
       elements.push({
         type: 'text',
-        content: line,
-        fontSize: 16,
+        content: line.substring(3), // Remove "## "
+        fontSize: 18,
         bold: true,
+        align: 'left',
+        color: null
+      })
+      
+      // Add space after header
+      elements.push({
+        type: 'text',
+        content: '',
+        fontSize: 13,
+        bold: false,
         align: 'left',
         color: null
       })
       continue
     }
     
-    // Detect bullet points (• - * etc.)
-    if (line.match(/^[•\-\*]\s/)) {
+    // Detect numbered lists (1. 2. 3. 4. etc.)
+    if (line.match(/^\d+\.\s/)) {
       elements.push({
         type: 'text',
         content: line,
@@ -203,8 +213,8 @@ function parseStructuredText(text: string): any[] {
       continue
     }
     
-    // Detect numbered lists (1. 2. 3. etc.)
-    if (line.match(/^\d+\.\s/)) {
+    // Detect bullet points (• - * etc.) - fallback
+    if (line.match(/^[•\-\*]\s/)) {
       elements.push({
         type: 'text',
         content: line,
@@ -227,7 +237,7 @@ function parseStructuredText(text: string): any[] {
     })
     
     // Add space after paragraphs (but not after lists)
-    if (!line.match(/^\d+\.\s/) && !line.match(/^[•\-\*]\s/) && !line.startsWith('Moral:')) {
+    if (!line.match(/^\d+\.\s/) && !line.match(/^[•\-\*]\s/)) {
       elements.push({
         type: 'text',
         content: '',
