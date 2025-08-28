@@ -124,7 +124,7 @@ export function SummaryTypeDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-7xl max-h-[95vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Sparkles className="h-5 w-5" />
@@ -135,26 +135,26 @@ export function SummaryTypeDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 py-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 py-8">
           {summaryTypes.map((type) => (
             <Card 
               key={type.id}
-              className={`cursor-pointer transition-all hover:shadow-md min-h-[200px] ${
+              className={`cursor-pointer transition-all hover:shadow-md min-h-[220px] ${
                 localSelectedType === type.id 
                   ? "ring-2 ring-primary bg-primary/5" 
                   : "hover:bg-muted/50"
               }`}
               onClick={() => setLocalSelectedType(type.id)}
             >
-              <CardHeader className="pb-3">
+              <CardHeader className="pb-4">
                 <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-primary/10 text-primary flex-shrink-0">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 rounded-lg bg-primary/10 text-primary flex-shrink-0">
                       {type.icon}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <CardTitle className="text-base flex items-center gap-2">
-                        <span className="truncate">{type.title}</span>
+                      <CardTitle className="text-lg flex items-center gap-3">
+                        <span className="break-words">{type.title}</span>
                         {type.badge && (
                           <Badge variant="secondary" className="text-xs flex-shrink-0">
                             {type.badge}
@@ -164,18 +164,18 @@ export function SummaryTypeDialog({
                     </div>
                   </div>
                 </div>
-                <CardDescription className="text-sm leading-relaxed">
+                <CardDescription className="text-sm leading-relaxed mt-3">
                   {type.description}
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-0">
                 <div className="text-xs text-muted-foreground">
                   <strong>Ejemplos:</strong>
-                  <ul className="mt-2 space-y-1">
+                  <ul className="mt-3 space-y-2">
                     {type.examples.map((example, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <span className="w-1 h-1 bg-muted-foreground rounded-full mt-2 flex-shrink-0" />
-                        <span className="leading-relaxed">{example}</span>
+                      <li key={index} className="flex items-start gap-3">
+                        <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full mt-2 flex-shrink-0" />
+                        <span className="leading-relaxed break-words">{example}</span>
                       </li>
                     ))}
                   </ul>

@@ -46,7 +46,7 @@ export default function RichTextEditor({ content, onChange, onImageUpload }: Ric
   const [isUnderline, setIsUnderline] = useState(false)
   const [fontFamily, setFontFamily] = useState("Arial")
   const [fontSize, setFontSize] = useState("16")
-  const [textColor, setTextColor] = useState("#FFFFFF")
+  const [textColor, setTextColor] = useState("#000000")
   const [alignment, setAlignment] = useState<"left" | "center" | "right" | "justify">("left")
   const [wordCount, setWordCount] = useState(0)
 
@@ -353,7 +353,7 @@ export default function RichTextEditor({ content, onChange, onImageUpload }: Ric
                   fontFamily: fontFamily,
                   fontSize: `${fontSize}px`,
                   color: textColor,
-                  backgroundColor: "#000000"
+                  backgroundColor: "#FFFFFF"
                 }}
                 suppressContentEditableWarning
               />
