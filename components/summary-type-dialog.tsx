@@ -53,7 +53,7 @@ const summaryTypes: SummaryTypeOption[] = [
   },
   {
     id: "meeting",
-    title: "Reunión / Minutas",
+    title: "Reunión / Minutos",
     description: "Para transcripciones de reuniones, conversaciones y minutas",
     icon: <Users className="h-5 w-5" />,
     examples: ["Transcripciones de reuniones", "Minutas de juntas", "Conversaciones entre personas"]
@@ -124,7 +124,7 @@ export function SummaryTypeDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Sparkles className="h-5 w-5" />
@@ -135,11 +135,11 @@ export function SummaryTypeDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 py-6">
           {summaryTypes.map((type) => (
             <Card 
               key={type.id}
-              className={`cursor-pointer transition-all hover:shadow-md ${
+              className={`cursor-pointer transition-all hover:shadow-md min-h-[200px] ${
                 localSelectedType === type.id 
                   ? "ring-2 ring-primary bg-primary/5" 
                   : "hover:bg-muted/50"
@@ -149,14 +149,14 @@ export function SummaryTypeDialog({
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                    <div className="p-2 rounded-lg bg-primary/10 text-primary flex-shrink-0">
                       {type.icon}
                     </div>
-                    <div>
+                    <div className="min-w-0 flex-1">
                       <CardTitle className="text-base flex items-center gap-2">
-                        {type.title}
+                        <span className="truncate">{type.title}</span>
                         {type.badge && (
-                          <Badge variant="secondary" className="text-xs">
+                          <Badge variant="secondary" className="text-xs flex-shrink-0">
                             {type.badge}
                           </Badge>
                         )}
@@ -164,18 +164,18 @@ export function SummaryTypeDialog({
                     </div>
                   </div>
                 </div>
-                <CardDescription className="text-sm">
+                <CardDescription className="text-sm leading-relaxed">
                   {type.description}
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-0">
                 <div className="text-xs text-muted-foreground">
                   <strong>Ejemplos:</strong>
-                  <ul className="mt-1 space-y-1">
+                  <ul className="mt-2 space-y-1">
                     {type.examples.map((example, index) => (
-                      <li key={index} className="flex items-center gap-1">
-                        <span className="w-1 h-1 bg-muted-foreground rounded-full" />
-                        {example}
+                      <li key={index} className="flex items-start gap-2">
+                        <span className="w-1 h-1 bg-muted-foreground rounded-full mt-2 flex-shrink-0" />
+                        <span className="leading-relaxed">{example}</span>
                       </li>
                     ))}
                   </ul>

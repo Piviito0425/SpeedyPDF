@@ -21,9 +21,9 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
   const [summaryType, setSummaryType] = useState<string | null>(null)
   const [selectedSummaryType, setSelectedSummaryType] = useState<SummaryType>("auto")
   const [showSummaryDialog, setShowSummaryDialog] = useState(false)
-  const [template, setTemplate] = useState<"classic" | "compact">("classic")
-  const [textColor, setTextColor] = useState("#FFFFFF")
-  const [bgColor, setBgColor] = useState("#000000")
+  const [template, setTemplate] = useState<"compact">("compact")
+  const [textColor, setTextColor] = useState("#000000")
+  const [bgColor, setBgColor] = useState("#FFFFFF")
   const [isLoading, setIsLoading] = useState(false)
   const [isSummarizing, setIsSummarizing] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -178,7 +178,7 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
   return (
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Editor de Documentos</h1>
+        <h1 className="text-3xl font-bold">Editor</h1>
         <div className="text-sm text-gray-500">Proyecto: {params.id}</div>
       </div>
 
@@ -234,15 +234,14 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
             <CardContent className="space-y-4">
               <div>
                 <Label htmlFor="template">Plantilla</Label>
-                <Select value={template} onValueChange={(value: "classic" | "compact") => setTemplate(value)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="classic">Clásica</SelectItem>
-                    <SelectItem value="compact">Compacta</SelectItem>
-                  </SelectContent>
-                </Select>
+                                 <Select value={template} onValueChange={(value: "compact") => setTemplate(value)}>
+                   <SelectTrigger>
+                     <SelectValue />
+                   </SelectTrigger>
+                   <SelectContent>
+                     <SelectItem value="compact">Compacta</SelectItem>
+                   </SelectContent>
+                 </Select>
               </div>
 
               <div>
@@ -325,15 +324,15 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
               </Button>
               {selectedSummaryType !== "auto" && (
                 <p className="text-xs text-muted-foreground text-center mt-2">
-                  Tipo seleccionado: {
-                    selectedSummaryType === "meeting" && "Reunión / Minutas"
-                    || selectedSummaryType === "narrative" && "Narrativa / Historia"
-                    || selectedSummaryType === "article" && "Artículo / Noticia"
-                    || selectedSummaryType === "technical" && "Documento técnico"
-                    || selectedSummaryType === "legal" && "Legal / Política"
-                    || selectedSummaryType === "email" && "Hilo de emails"
-                    || selectedSummaryType === "generic" && "Genérico"
-                  }
+                                     Tipo seleccionado: {
+                     selectedSummaryType === "meeting" && "Reunión / Minutos"
+                     || selectedSummaryType === "narrative" && "Narrativa / Historia"
+                     || selectedSummaryType === "article" && "Artículo / Noticia"
+                     || selectedSummaryType === "technical" && "Documento técnico"
+                     || selectedSummaryType === "legal" && "Legal / Política"
+                     || selectedSummaryType === "email" && "Hilo de emails"
+                     || selectedSummaryType === "generic" && "Genérico"
+                   }
                 </p>
               )}
             </CardContent>
