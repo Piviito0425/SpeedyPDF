@@ -192,11 +192,9 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
                 )}
               </CardTitle>
             </CardHeader>
-            <CardContent className="h-full p-0">
-              <div className="h-full">
-                <PdfInlineEditor pdfUrl={summaryPdfUrl || pdfUrl} />
-              </div>
-            </CardContent>
+                         <CardContent className="h-full p-4">
+               <PdfInlineEditor pdfUrl={summaryPdfUrl || pdfUrl} />
+             </CardContent>
           </Card>
 
           {/* Editor Section - Debajo del PDF */}

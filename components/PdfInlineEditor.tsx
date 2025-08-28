@@ -18,33 +18,35 @@ export default function PdfInlineEditor({ pdfUrl }: Props) {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="text-center">
-        <h3 className="text-sm font-medium text-gray-700 mb-2">Previsualización del PDF</h3>
+    <div className="h-full flex flex-col">
+      <div className="text-center mb-2">
+        <h3 className="text-sm font-medium text-gray-700">Previsualización del PDF</h3>
         <p className="text-xs text-gray-500">Vista previa de cómo se verá tu documento</p>
       </div>
       
-      <div className="flex justify-center h-full">
-        <div className="border rounded-lg shadow-sm overflow-hidden bg-white w-full h-full">
-          <iframe
-            src={pdfUrl}
-            className="w-full h-full"
-            onLoad={() => setIsLoading(false)}
-            onLoadStart={() => setIsLoading(true)}
-            style={{ border: 'none' }}
-          />
-          {isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-                <p className="text-gray-600">Cargando previsualización...</p>
-              </div>
+             <div className="flex-1 relative min-h-0">
+         <iframe
+           src={pdfUrl}
+           className="w-full h-full border rounded-lg shadow-sm"
+           onLoad={() => setIsLoading(false)}
+           onLoadStart={() => setIsLoading(true)}
+           style={{ 
+             border: 'none',
+             minHeight: '500px',
+             display: 'block'
+           }}
+         />
+        {isLoading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 rounded-lg">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+              <p className="text-gray-600">Cargando previsualización...</p>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
       
-      <div className="text-center">
+      <div className="text-center mt-2">
         <p className="text-xs text-gray-500">
           El PDF se generará con la configuración actual: plantilla seleccionada, 
           colores y contenido del editor
