@@ -124,22 +124,22 @@ export function SummaryTypeDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[90vw] max-h-[90vh] overflow-y-auto w-[1400px]">
-        <DialogHeader className="pb-8">
-          <DialogTitle className="flex items-center gap-3 text-2xl">
-            <Sparkles className="h-6 w-6" />
+      <DialogContent className="w-screen h-screen max-w-none max-h-none overflow-y-auto p-8">
+        <DialogHeader className="pb-6">
+          <DialogTitle className="flex items-center gap-3 text-3xl">
+            <Sparkles className="h-8 w-8" />
             Selecciona el tipo de resumen
           </DialogTitle>
-          <DialogDescription className="text-base leading-relaxed">
+          <DialogDescription className="text-lg leading-relaxed">
             Elige el formato que mejor se adapte a tu documento para obtener un resumen más preciso y estructurado
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-10 py-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 py-8">
           {summaryTypes.map((type) => (
             <Card 
               key={type.id}
-              className={`cursor-pointer transition-all hover:shadow-md min-h-[280px] ${
+              className={`cursor-pointer transition-all hover:shadow-md min-h-[320px] ${
                 localSelectedType === type.id 
                   ? "ring-2 ring-primary bg-primary/5" 
                   : "hover:bg-muted/50"
@@ -148,15 +148,15 @@ export function SummaryTypeDialog({
             >
               <CardHeader className="pb-6">
                 <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-5">
-                    <div className="p-4 rounded-xl bg-primary/10 text-primary flex-shrink-0">
+                  <div className="flex items-center gap-6">
+                    <div className="p-5 rounded-2xl bg-primary/10 text-primary flex-shrink-0">
                       {type.icon}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <CardTitle className="text-xl flex items-center gap-4">
+                      <CardTitle className="text-2xl flex items-center gap-4">
                         <span className="break-words leading-tight">{type.title}</span>
                         {type.badge && (
-                          <Badge variant="secondary" className="text-sm flex-shrink-0">
+                          <Badge variant="secondary" className="text-base flex-shrink-0">
                             {type.badge}
                           </Badge>
                         )}
@@ -164,17 +164,17 @@ export function SummaryTypeDialog({
                     </div>
                   </div>
                 </div>
-                <CardDescription className="text-base leading-relaxed mt-4">
+                <CardDescription className="text-lg leading-relaxed mt-5">
                   {type.description}
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-0">
-                <div className="text-sm text-muted-foreground">
+                <div className="text-base text-muted-foreground">
                   <strong>Ejemplos:</strong>
-                  <ul className="mt-4 space-y-3">
+                  <ul className="mt-5 space-y-4">
                     {type.examples.map((example, index) => (
                       <li key={index} className="flex items-start gap-4">
-                        <span className="w-2 h-2 bg-muted-foreground rounded-full mt-2 flex-shrink-0" />
+                        <span className="w-2.5 h-2.5 bg-muted-foreground rounded-full mt-2 flex-shrink-0" />
                         <span className="leading-relaxed break-words">{example}</span>
                       </li>
                     ))}
