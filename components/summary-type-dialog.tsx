@@ -4,13 +4,11 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
-  DialogContent,
+  DialogContentFullscreen,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogPortal,
-  DialogOverlay,
   DialogClose,
 } from "@/components/ui/dialog"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -135,88 +133,83 @@ export function SummaryTypeDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogPortal>
-        <DialogOverlay className="fixed inset-0 z-50 bg-black/60" />
-        <DialogContent className="fixed inset-0 z-50 m-0 h-screen w-screen p-0 sm:rounded-none outline-none">
-          <div className="h-full w-full overflow-y-auto bg-[#0f0f0f]">
-            <header className="sticky top-0 z-10 flex items-center justify-between border-b border-white/10 bg-[#0f0f0f]/80 backdrop-blur px-6 py-4">
-              <DialogTitle className="flex items-center gap-3 text-2xl font-semibold">
-                <Sparkles className="h-6 w-6" />
-                Selecciona el tipo de resumen
-              </DialogTitle>
-              <DialogClose className="rounded-lg p-2 hover:bg-white/10 text-white">✕</DialogClose>
-            </header>
-            
-            <main className="p-6">
-              <div className="mb-6">
-                <p className="text-lg leading-relaxed text-gray-300">
-                  Elige el formato que mejor se adapte a tu documento para obtener un resumen más preciso y estructurado
-                </p>
-              </div>
+      <DialogContentFullscreen>
+        <header className="sticky top-0 z-10 flex items-center justify-between border-b border-white/10 bg-[#0f0f0f]/80 backdrop-blur px-6 py-4">
+          <DialogTitle className="flex items-center gap-3 text-2xl font-semibold">
+            <Sparkles className="h-6 w-6" />
+            Selecciona el tipo de resumen
+          </DialogTitle>
+          <DialogClose className="rounded-lg p-2 hover:bg-white/10 text-white" aria-label="Cerrar">✕</DialogClose>
+        </header>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-                {summaryTypes.map((type) => (
-                  <Card 
-                    key={type.id}
-                    className={`cursor-pointer transition-all hover:shadow-md min-h-[320px] bg-[#1a1a1a] border-[#333] ${
-                      localSelectedType === type.id 
-                        ? "ring-2 ring-primary bg-primary/10" 
-                        : "hover:bg-[#2a2a2a]"
-                    }`}
-                    onClick={() => setLocalSelectedType(type.id)}
-                  >
-                    <CardHeader className="pb-6">
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-6">
-                          <div className="p-5 rounded-2xl bg-primary/10 text-primary flex-shrink-0">
-                            {type.icon}
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <CardTitle className="text-2xl flex items-center gap-4 text-white">
-                              <span className="break-words leading-tight">{type.title}</span>
-                              {type.badge && (
-                                <Badge variant="secondary" className="text-base flex-shrink-0">
-                                  {type.badge}
-                                </Badge>
-                              )}
-                            </CardTitle>
-                          </div>
-                        </div>
-                      </div>
-                      <CardDescription className="text-lg leading-relaxed mt-5 text-gray-300">
-                        {type.description}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                      <div className="text-base text-gray-400">
-                        <strong className="text-white">Ejemplos:</strong>
-                        <ul className="mt-5 space-y-4">
-                          {type.examples.map((example, index) => (
-                            <li key={index} className="flex items-start gap-4">
-                              <span className="w-2.5 h-2.5 bg-gray-500 rounded-full mt-2 flex-shrink-0" />
-                              <span className="leading-relaxed break-words">{example}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-
-              <div className="flex justify-end gap-4 mt-8 pt-6 border-t border-white/10">
-                <Button variant="outline" onClick={() => onOpenChange(false)} className="bg-[#1a1a1a] border-[#333] text-white hover:bg-[#2a2a2a]">
-                  Cancelar
-                </Button>
-                <Button onClick={handleConfirm} className="bg-primary hover:bg-primary/90">
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  Resumir con {summaryTypes.find(t => t.id === localSelectedType)?.title}
-                </Button>
-              </div>
-            </main>
+        <main className="flex-1 overflow-y-auto p-6">
+          <div className="mb-6">
+            <p className="text-lg leading-relaxed text-gray-300">
+              Elige el formato que mejor se adapte a tu documento para obtener un resumen más preciso y estructurado
+            </p>
           </div>
-        </DialogContent>
-      </DialogPortal>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+            {summaryTypes.map((type) => (
+              <Card 
+                key={type.id}
+                className={`cursor-pointer transition-all hover:shadow-md min-h-[320px] bg-[#1a1a1a] border-[#333] ${
+                  localSelectedType === type.id 
+                    ? "ring-2 ring-primary bg-primary/10" 
+                    : "hover:bg-[#2a2a2a]"
+                }`}
+                onClick={() => setLocalSelectedType(type.id)}
+              >
+                <CardHeader className="pb-6">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-6">
+                      <div className="p-5 rounded-2xl bg-primary/10 text-primary flex-shrink-0">
+                        {type.icon}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <CardTitle className="text-2xl flex items-center gap-4 text-white">
+                          <span className="break-words leading-tight">{type.title}</span>
+                          {type.badge && (
+                            <Badge variant="secondary" className="text-base flex-shrink-0">
+                              {type.badge}
+                            </Badge>
+                          )}
+                        </CardTitle>
+                      </div>
+                    </div>
+                  </div>
+                  <CardDescription className="text-lg leading-relaxed mt-5 text-gray-300">
+                    {type.description}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <div className="text-base text-gray-400">
+                    <strong className="text-white">Ejemplos:</strong>
+                    <ul className="mt-5 space-y-4">
+                      {type.examples.map((example, index) => (
+                        <li key={index} className="flex items-start gap-4">
+                          <span className="w-2.5 h-2.5 bg-gray-500 rounded-full mt-2 flex-shrink-0" />
+                          <span className="leading-relaxed break-words">{example}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div className="flex justify-end gap-4 mt-8 pt-6 border-t border-white/10">
+            <Button variant="outline" onClick={() => onOpenChange(false)} className="bg-[#1a1a1a] border-[#333] text-white hover:bg-[#2a2a2a]">
+              Cancelar
+            </Button>
+            <Button onClick={handleConfirm} className="bg-primary hover:bg-primary/90">
+              <Sparkles className="h-4 w-4 mr-2" />
+              Resumir con {summaryTypes.find(t => t.id === localSelectedType)?.title}
+            </Button>
+          </div>
+        </main>
+      </DialogContentFullscreen>
     </Dialog>
   )
 }

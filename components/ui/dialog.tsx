@@ -80,6 +80,34 @@ function DialogContent({
   )
 }
 
+function DialogContentFullscreen({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Content>) {
+  return (
+    <DialogPortal data-slot="dialog-portal">
+      <DialogOverlay />
+      <DialogPrimitive.Content
+        data-slot="dialog-content"
+        // FULLSCREEN: sin max-w ni translate; ocupa todo el viewport
+        className={cn(
+          "fixed inset-0 z-50 m-0 h-screen w-screen p-0 outline-none",
+          // contenedor scrollable con fondo
+          "bg-[#0f0f0f] text-white",
+          className
+        )}
+        {...props}
+      >
+        {/* wrapper para scroll del contenido, header sticky opcional */}
+        <div className="flex h-full w-full flex-col">
+          {children}
+        </div>
+      </DialogPrimitive.Content>
+    </DialogPortal>
+  )
+}
+
 function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -133,6 +161,7 @@ export {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogContentFullscreen,
   DialogDescription,
   DialogFooter,
   DialogHeader,
