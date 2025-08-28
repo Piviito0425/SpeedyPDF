@@ -177,7 +177,7 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
         {/* PDF Preview - Mucho más grande */}
         <div className="xl:col-span-3">
-          <Card className="h-[80vh]">
+                     <Card className="h-[85vh]">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <span>Previsualización del PDF</span>
@@ -192,7 +192,7 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
                 )}
               </CardTitle>
             </CardHeader>
-                         <CardContent className="h-full p-4">
+                         <CardContent className="h-full p-2">
                <PdfInlineEditor pdfUrl={summaryPdfUrl || pdfUrl} />
              </CardContent>
           </Card>

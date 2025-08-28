@@ -30,11 +30,11 @@ export default function PdfInlineEditor({ pdfUrl }: Props) {
            className="w-full h-full border rounded-lg shadow-sm"
            onLoad={() => setIsLoading(false)}
            onLoadStart={() => setIsLoading(true)}
-           style={{ 
-             border: 'none',
-             minHeight: '500px',
-             display: 'block'
-           }}
+                       style={{ 
+              border: 'none',
+              minHeight: '700px',
+              display: 'block'
+            }}
          />
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 rounded-lg">
