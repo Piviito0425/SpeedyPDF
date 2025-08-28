@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast"
 import { Upload, Download, Eye, Sparkles } from "lucide-react"
 import RichTextEditor from "@/components/rich-text-editor"
 import PdfInlineEditor from "@/components/PdfInlineEditor"
+import { SummaryTypeDialog, SummaryType } from "@/components/summary-type-dialog"
 
 export default function ProyectoPage({ params }: { params: { id: string } }) {
   const [text, setText] = useState("")
@@ -18,6 +19,8 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null)
   const [summaryPdfUrl, setSummaryPdfUrl] = useState<string | null>(null)
   const [summaryType, setSummaryType] = useState<string | null>(null)
+  const [selectedSummaryType, setSelectedSummaryType] = useState<SummaryType>("auto")
+  const [showSummaryDialog, setShowSummaryDialog] = useState(false)
   const [template, setTemplate] = useState<"classic" | "compact">("classic")
   const [textColor, setTextColor] = useState("#FFFFFF")
   const [bgColor, setBgColor] = useState("#000000")
@@ -95,7 +98,7 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
     }
   }
 
-  const handleAISummarize = async () => {
+  const handleAISummarize = async (summaryType: SummaryType = selectedSummaryType) => {
     if (!text.trim()) {
       toast({
         title: "Error",
@@ -113,7 +116,7 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text, summaryType }),
       })
 
       if (!response.ok) {
@@ -167,6 +170,11 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
     }
   }
 
+  const handleSummaryTypeSelect = (type: SummaryType) => {
+    setSelectedSummaryType(type)
+    handleAISummarize(type)
+  }
+
   return (
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
@@ -187,6 +195,9 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
                     {summaryType === 'narrative' && '📖 Narrativa'}
                     {summaryType === 'news/article' && '📰 Artículo'}
                     {summaryType === 'technical_report' && '📊 Técnico'}
+                    {summaryType === 'technical' && '📊 Técnico'}
+                    {summaryType === 'legal' && '⚖️ Legal'}
+                    {summaryType === 'email' && '📧 Email'}
                     {summaryType === 'generic' && '📄 Genérico'}
                   </div>
                 )}
@@ -289,14 +300,42 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
               </div>
 
               <Button 
-                onClick={handleAISummarize} 
+                onClick={() => setShowSummaryDialog(true)} 
                 disabled={isSummarizing} 
                 variant="outline" 
                 className="w-full"
               >
                 <Sparkles className="h-4 w-4 mr-2" />
-                {isSummarizing ? "Resumiendo..." : "Resumir con IA"}
+                {isSummarizing ? "Resumiendo..." : (
+                  <>
+                    Resumir con IA
+                    {selectedSummaryType !== "auto" && (
+                      <span className="ml-2 text-xs bg-primary/10 text-primary px-2 py-1 rounded">
+                        {selectedSummaryType === "meeting" && "📋"}
+                        {selectedSummaryType === "narrative" && "📖"}
+                        {selectedSummaryType === "article" && "📰"}
+                        {selectedSummaryType === "technical" && "📊"}
+                        {selectedSummaryType === "legal" && "⚖️"}
+                        {selectedSummaryType === "email" && "📧"}
+                        {selectedSummaryType === "generic" && "📄"}
+                      </span>
+                    )}
+                  </>
+                )}
               </Button>
+              {selectedSummaryType !== "auto" && (
+                <p className="text-xs text-muted-foreground text-center mt-2">
+                  Tipo seleccionado: {
+                    selectedSummaryType === "meeting" && "Reunión / Minutas"
+                    || selectedSummaryType === "narrative" && "Narrativa / Historia"
+                    || selectedSummaryType === "article" && "Artículo / Noticia"
+                    || selectedSummaryType === "technical" && "Documento técnico"
+                    || selectedSummaryType === "legal" && "Legal / Política"
+                    || selectedSummaryType === "email" && "Hilo de emails"
+                    || selectedSummaryType === "generic" && "Genérico"
+                  }
+                </p>
+              )}
             </CardContent>
           </Card>
 
@@ -358,6 +397,14 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
           </Card>
         </div>
       </div>
+
+      {/* Summary Type Dialog */}
+      <SummaryTypeDialog
+        open={showSummaryDialog}
+        onOpenChange={setShowSummaryDialog}
+        onSelectType={handleSummaryTypeSelect}
+        selectedType={selectedSummaryType}
+      />
     </div>
   )
 }
