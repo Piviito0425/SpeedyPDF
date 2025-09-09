@@ -30,6 +30,36 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
   const { toast } = useToast()
 
   const handleImageUpload = (file: File) => {
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Error",
+        description: "Por favor, selecciona un archivo de imagen válido",
+        variant: "destructive",
+      })
+      return
+    }
+
+    // Validate file size (10MB limit)
+    if (file.size > 10 * 1024 * 1024) {
+      toast({
+        title: "Error",
+        description: "La imagen es demasiado grande. Máximo 10MB",
+        variant: "destructive",
+      })
+      return
+    }
+
+    // Validate specific image types
+    if (!['image/jpeg', 'image/jpg', 'image/png'].includes(file.type)) {
+      toast({
+        title: "Error",
+        description: "Solo se permiten archivos JPG y PNG",
+        variant: "destructive",
+      })
+      return
+    }
+
     setImageFile(file)
     const url = URL.createObjectURL(file)
     setImageUrl(url)
@@ -97,6 +127,7 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
 
       if (!pdfResponse.ok) {
         const errorData = await pdfResponse.json()
+        console.error("PDF generation error:", errorData)
         throw new Error(errorData.error || "Error al generar el PDF del resumen")
       }
 

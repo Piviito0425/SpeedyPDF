@@ -43,23 +43,36 @@ export async function POST(req: Request) {
     let cursorY = height - margin
 
     // Image
-    if (imgBuf) {
-      let image
-      if (file?.type === "image/jpeg") {
-        image = await pdfDoc.embedJpg(imgBuf)
-      } else if (file?.type === "image/png") {
-        image = await pdfDoc.embedPng(imgBuf)
-      }
+    if (imgBuf && file) {
+      try {
+        let image
+        console.log("Processing image, type:", file.type, "size:", file.size)
+        
+        // Validate file type and size
+        if (file.size > 10 * 1024 * 1024) { // 10MB limit
+          console.warn("Image too large, skipping")
+        } else if (file.type === "image/jpeg" || file.type === "image/jpg") {
+          image = await pdfDoc.embedJpg(imgBuf)
+        } else if (file.type === "image/png") {
+          image = await pdfDoc.embedPng(imgBuf)
+        } else {
+          console.warn("Unsupported image type:", file.type)
+        }
 
-      if (image) {
-        const imgDims = image.scaleToFit(width - margin * 2, 280)
-        page.drawImage(image, {
-          x: width / 2 - imgDims.width / 2,
-          y: cursorY - imgDims.height,
-          width: imgDims.width,
-          height: imgDims.height,
-        })
-        cursorY -= imgDims.height + 20
+        if (image) {
+          const imgDims = image.scaleToFit(width - margin * 2, 280)
+          page.drawImage(image, {
+            x: width / 2 - imgDims.width / 2,
+            y: cursorY - imgDims.height,
+            width: imgDims.width,
+            height: imgDims.height,
+          })
+          cursorY -= imgDims.height + 20
+          console.log("Image embedded successfully")
+        }
+      } catch (imageError) {
+        console.error("Error processing image:", imageError)
+        // Continue without image instead of failing completely
       }
     }
 
@@ -102,7 +115,16 @@ export async function POST(req: Request) {
     })
   } catch (e: any) {
     console.error("PDF compose error:", e)
-    return new Response(JSON.stringify({ error: e?.message || "PDF error" }), { status: 500 })
+    console.error("Error stack:", e?.stack)
+    return new Response(JSON.stringify({ 
+      error: e?.message || "PDF error",
+      details: e?.stack || "No additional details"
+    }), { 
+      status: 500,
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
   }
 }
 
