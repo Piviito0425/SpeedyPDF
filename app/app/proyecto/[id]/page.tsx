@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
 import { Upload, Download, Eye, Sparkles } from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
 import RichTextEditor from "@/components/rich-text-editor"
 import PdfInlineEditor from "@/components/PdfInlineEditor"
 import { SummaryTypeDialog, SummaryType } from "@/components/summary-type-dialog"
@@ -175,11 +177,22 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Editor</h1>
-        <div className="text-sm text-gray-500">Proyecto: {params.id}</div>
-      </div>
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="border-b">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <Link href="/app" className="flex items-center space-x-2">
+            <Image src="/logo.png" width={24} height={24} alt="SpeedyPDF" className="rounded" />
+            <span className="text-xl font-semibold">SpeedyPDF</span>
+          </Link>
+        </div>
+      </header>
+
+      <div className="container mx-auto p-6 space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold">Editor</h1>
+          <div className="text-sm text-gray-500">Proyecto: {params.id}</div>
+        </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
         {/* PDF Preview - Mucho más grande */}
@@ -388,13 +401,14 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
         </div>
       </div>
 
-      {/* Summary Type Dialog */}
-      <SummaryTypeDialog
-        open={showSummaryDialog}
-        onOpenChange={setShowSummaryDialog}
-        onSelectType={handleSummaryTypeSelect}
-        selectedType={selectedSummaryType}
-      />
+        {/* Summary Type Dialog */}
+        <SummaryTypeDialog
+          open={showSummaryDialog}
+          onOpenChange={setShowSummaryDialog}
+          onSelectType={handleSummaryTypeSelect}
+          selectedType={selectedSummaryType}
+        />
+      </div>
     </div>
   )
 }

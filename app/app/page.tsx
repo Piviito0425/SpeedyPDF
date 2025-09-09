@@ -13,23 +13,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import Link from "next/link"
 
-// Mock data
-const projects = [
-  {
-    id: "1",
-    name: "Manual de usuario",
-    lastVersion: "1.3",
-    updatedAt: "2024-01-15",
-    status: "published",
-  },
-  {
-    id: "2",
-    name: "Propuesta comercial Q1",
-    lastVersion: "2.1",
-    updatedAt: "2024-01-14",
-    status: "draft",
-  },
-]
+// Mock data - Empty array to show empty state
+const projects: any[] = []
 
 export default function DashboardPage() {
   return (
