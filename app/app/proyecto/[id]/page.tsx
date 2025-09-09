@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
-import { Upload, Download, Eye, Sparkles } from "lucide-react"
+import { Upload, Download, Sparkles } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import RichTextEditor from "@/components/rich-text-editor"
@@ -25,7 +25,6 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
   const template = "compact" as const
   const [textColor, setTextColor] = useState("#000000")
   const [bgColor, setBgColor] = useState("#FFFFFF")
-  const [isLoading, setIsLoading] = useState(false)
   const [isSummarizing, setIsSummarizing] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { toast } = useToast()
@@ -48,56 +47,6 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
     e.preventDefault()
   }
 
-  const previewEditable = async () => {
-    if (!text.trim()) {
-      toast({
-        title: "Error",
-        description: "Por favor, añade algún contenido al editor",
-        variant: "destructive",
-      })
-      return
-    }
-
-    setIsLoading(true)
-    try {
-      const formData = new FormData()
-      formData.append("text", text)
-      formData.append("template", template)
-      formData.append("textColor", textColor)
-      formData.append("bgColor", bgColor)
-      if (imageFile) {
-        formData.append("image", imageFile)
-      }
-
-      const response = await fetch("/api/pdf/compose", {
-        method: "POST",
-        body: formData,
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || "Error al generar el PDF")
-      }
-
-      const blob = await response.blob()
-      const url = URL.createObjectURL(blob)
-      setPdfUrl(url)
-      
-      toast({
-        title: "Éxito",
-        description: "PDF generado correctamente",
-      })
-    } catch (error: any) {
-      console.error("Error generating PDF:", error)
-      toast({
-        title: "Error",
-        description: error.message || "Error al generar el PDF",
-        variant: "destructive",
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }
 
   const handleAISummarize = async (summaryType: SummaryType = selectedSummaryType) => {
     if (!text.trim()) {
@@ -282,25 +231,21 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
                 </div>
               </div>
 
-              <div className="flex gap-2">
-                <Button onClick={previewEditable} disabled={isLoading} className="flex-1">
-                  <Eye className="h-4 w-4 mr-2" />
-                  {isLoading ? "Generando..." : "Previsualizar"}
+              {(pdfUrl || summaryPdfUrl) && (
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    const a = document.createElement('a')
+                    a.href = summaryPdfUrl || pdfUrl
+                    a.download = summaryPdfUrl ? 'resumen.pdf' : 'documento.pdf'
+                    a.click()
+                  }}
+                  className="w-full"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Descargar PDF
                 </Button>
-                {(pdfUrl || summaryPdfUrl) && (
-                  <Button 
-                    variant="outline" 
-                    onClick={() => {
-                      const a = document.createElement('a')
-                      a.href = summaryPdfUrl || pdfUrl
-                      a.download = summaryPdfUrl ? 'resumen.pdf' : 'documento.pdf'
-                      a.click()
-                    }}
-                  >
-                    <Download className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
+              )}
 
               <Button 
                 onClick={() => setShowSummaryDialog(true)} 
