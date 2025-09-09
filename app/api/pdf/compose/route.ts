@@ -50,7 +50,38 @@ export async function POST(req: Request) {
 
     let cursorY = height - margin
 
-    // Image
+    // Image will be drawn AFTER the text content
+
+    // Parse HTML content
+    const parsedContent = parseHTMLContent(text || "(sin contenido)")
+    
+    // Render content
+    for (const element of parsedContent) {
+      if (element.type === 'text') {
+        const lines = wrapLine(element.content, width - margin * 2, element.fontSize || bodyFontSize, element.bold ? boldFont : font)
+        for (const line of lines) {
+          page.drawText(line, {
+            x: margin + (element.align === 'center' ? (width - margin * 2 - font.widthOfTextAtSize(line, element.fontSize || bodyFontSize)) / 2 : 0),
+            y: cursorY - (element.fontSize || bodyFontSize),
+            font: element.bold ? boldFont : font,
+            size: element.fontSize || bodyFontSize,
+            color: element.color || color,
+          })
+          cursorY -= (element.fontSize || bodyFontSize) * 1.2
+        }
+        // Add extra space after headings
+        if (element.bold && element.fontSize && element.fontSize > 15) {
+          cursorY -= 10
+        }
+      } else if (element.type === 'table') {
+        cursorY = drawTable(page, element, margin, cursorY, font, color)
+      }
+    }
+
+    // Add some space before the image
+    cursorY -= 20
+
+    // Image - Draw AFTER the text content
     if (imgBuf && file) {
       try {
         let image
@@ -73,7 +104,7 @@ export async function POST(req: Request) {
 
         if (image) {
           // Increase the maximum height for better visibility
-          const maxImageHeight = 400
+          const maxImageHeight = 300
           const imgDims = image.scaleToFit(width - margin * 2, maxImageHeight)
           console.log("Image dimensions after scaleToFit:", imgDims.width, "x", imgDims.height)
           console.log("Page dimensions:", width, "x", height)
@@ -104,36 +135,10 @@ export async function POST(req: Request) {
       } catch (imageError) {
         console.error("Error processing image:", imageError)
         console.error("Image error stack:", imageError?.stack)
-        // Continue without image instead of failing completely
+        // Continue without image if there's an error
       }
     } else {
       console.log("No image to process - imgBuf:", !!imgBuf, "file:", !!file)
-    }
-
-    // Parse HTML content
-    const parsedContent = parseHTMLContent(text || "(sin contenido)")
-    
-    // Render content
-    for (const element of parsedContent) {
-      if (element.type === 'text') {
-        const lines = wrapLine(element.content, width - margin * 2, element.fontSize || bodyFontSize, element.bold ? boldFont : font)
-        for (const line of lines) {
-          page.drawText(line, {
-            x: margin + (element.align === 'center' ? (width - margin * 2 - font.widthOfTextAtSize(line, element.fontSize || bodyFontSize)) / 2 : 0),
-            y: cursorY - (element.fontSize || bodyFontSize),
-            font: element.bold ? boldFont : font,
-            size: element.fontSize || bodyFontSize,
-            color: element.color || color,
-          })
-          cursorY -= (element.fontSize || bodyFontSize) * 1.2
-        }
-        // Add extra space after headings
-        if (element.bold && element.fontSize && element.fontSize > 15) {
-          cursorY -= 10
-        }
-      } else if (element.type === 'table') {
-        cursorY = drawTable(page, element, margin, cursorY, font, color)
-      }
     }
 
     const bytes = await pdfDoc.save()
