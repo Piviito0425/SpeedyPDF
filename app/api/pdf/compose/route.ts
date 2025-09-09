@@ -72,15 +72,31 @@ export async function POST(req: Request) {
         }
 
         if (image) {
-          const imgDims = image.scaleToFit(width - margin * 2, 280)
-          console.log("Image dimensions:", imgDims.width, "x", imgDims.height)
-          page.drawImage(image, {
+          // Increase the maximum height for better visibility
+          const maxImageHeight = 400
+          const imgDims = image.scaleToFit(width - margin * 2, maxImageHeight)
+          console.log("Image dimensions after scaleToFit:", imgDims.width, "x", imgDims.height)
+          console.log("Page dimensions:", width, "x", height)
+          console.log("Drawing image at position:", {
             x: width / 2 - imgDims.width / 2,
             y: cursorY - imgDims.height,
             width: imgDims.width,
-            height: imgDims.height,
+            height: imgDims.height
           })
-          cursorY -= imgDims.height + 20
+          
+          // Ensure minimum size for visibility
+          const minWidth = 100
+          const minHeight = 100
+          const finalWidth = Math.max(imgDims.width, minWidth)
+          const finalHeight = Math.max(imgDims.height, minHeight)
+          
+          page.drawImage(image, {
+            x: width / 2 - finalWidth / 2,
+            y: cursorY - finalHeight,
+            width: finalWidth,
+            height: finalHeight,
+          })
+          cursorY -= finalHeight + 20
           console.log("Image drawn on page successfully, new cursorY:", cursorY)
         } else {
           console.warn("No image object created")
