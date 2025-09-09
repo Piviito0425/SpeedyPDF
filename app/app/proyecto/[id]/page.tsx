@@ -3,7 +3,6 @@
 import { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
@@ -21,7 +20,7 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
   const [summaryType, setSummaryType] = useState<string | null>(null)
   const [selectedSummaryType, setSelectedSummaryType] = useState<SummaryType>("auto")
   const [showSummaryDialog, setShowSummaryDialog] = useState(false)
-  const [template, setTemplate] = useState<"compact">("compact")
+  const template = "compact" as const
   const [textColor, setTextColor] = useState("#000000")
   const [bgColor, setBgColor] = useState("#FFFFFF")
   const [isLoading, setIsLoading] = useState(false)
@@ -211,8 +210,11 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
           {/* Editor Section - Debajo del PDF */}
           <Card className="mt-6">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <span>Editor</span>
+              <CardTitle className="flex items-center justify-between">
+                <span>Inserta aquí tu contenido a resumir</span>
+                <div className="text-sm text-muted-foreground">
+                  {text.length} caracteres
+                </div>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -232,17 +234,6 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
               <CardTitle>Configuración</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="template">Plantilla</Label>
-                                 <Select value={template} onValueChange={(value: "compact") => setTemplate(value)}>
-                   <SelectTrigger>
-                     <SelectValue />
-                   </SelectTrigger>
-                   <SelectContent>
-                     <SelectItem value="compact">Compacta</SelectItem>
-                   </SelectContent>
-                 </Select>
-              </div>
 
               <div>
                 <Label htmlFor="textColor">Color del texto de previsualización</Label>

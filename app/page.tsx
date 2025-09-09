@@ -101,61 +101,63 @@ export default function LandingPage() {
 
       {/* Pricing */}
       <section id="planes" className="py-20 px-4">
-        <div className="container mx-auto max-w-5xl">
+        <div className="container mx-auto max-w-4xl">
           <h2 className="text-3xl font-bold text-center mb-12">Planes y precios</h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Gratis</CardTitle>
-                <CardDescription>Perfecto para empezar</CardDescription>
-                <div className="text-3xl font-bold">
-                  €0<span className="text-sm font-normal">/mes</span>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 mb-6">
-                  <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-2" />3 tokens/diarios
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-2" />
-                    Exportación PDF
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
+          <div className="flex justify-center">
+            <div className="grid md:grid-cols-2 gap-6 max-w-4xl">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Gratis</CardTitle>
+                  <CardDescription>Perfecto para empezar</CardDescription>
+                  <div className="text-3xl font-bold">
+                    €0<span className="text-sm font-normal">/mes</span>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2 mb-6">
+                    <li className="flex items-center">
+                      <Check className="h-4 w-4 text-green-500 mr-2" />3 tokens/diarios
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="h-4 w-4 text-green-500 mr-2" />
+                      Exportación PDF
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
 
-            <Card className="border-primary">
-              <CardHeader>
-                <Badge className="w-fit mb-2">Más popular</Badge>
-                <CardTitle>Pro</CardTitle>
-                <CardDescription>Para uso profesional</CardDescription>
-                <div className="text-3xl font-bold">
-                  €5<span className="text-sm font-normal">/mes</span>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 mb-6">
-                  <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-2" />
-                    Tokens ilimitados
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-2" />
-                    Más variedad de plantillas
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-2" />
-                    Control de versiones
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-2" />
-                    Exportación PDF
-                  </li>
-                </ul>
-                <Button className="w-full">Elegir Pro</Button>
-              </CardContent>
-            </Card>
+              <Card className="border-primary">
+                <CardHeader>
+                  <Badge className="w-fit mb-2">Más popular</Badge>
+                  <CardTitle>Pro</CardTitle>
+                  <CardDescription>Para uso profesional</CardDescription>
+                  <div className="text-3xl font-bold">
+                    €5<span className="text-sm font-normal">/mes</span>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2 mb-6">
+                    <li className="flex items-center">
+                      <Check className="h-4 w-4 text-green-500 mr-2" />
+                      Tokens ilimitados
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="h-4 w-4 text-green-500 mr-2" />
+                      Más variedad de plantillas
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="h-4 w-4 text-green-500 mr-2" />
+                      Control de versiones
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="h-4 w-4 text-green-500 mr-2" />
+                      Exportación PDF
+                    </li>
+                  </ul>
+                  <Button className="w-full">Elegir Pro</Button>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </section>
