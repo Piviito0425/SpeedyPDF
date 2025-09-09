@@ -138,7 +138,7 @@ export default function LandingPage() {
                 <ul className="space-y-2 mb-6">
                   <li className="flex items-center">
                     <Check className="h-4 w-4 text-green-500 mr-2" />
-                    100 tokens/mensuales
+                    Tokens ilimitados
                   </li>
                   <li className="flex items-center">
                     <Check className="h-4 w-4 text-green-500 mr-2" />
@@ -154,43 +154,6 @@ export default function LandingPage() {
                   </li>
                 </ul>
                 <Button className="w-full">Elegir Pro</Button>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Business</CardTitle>
-                <CardDescription>Para equipos grandes</CardDescription>
-                <div className="text-3xl font-bold">
-                  €30<span className="text-sm font-normal">/mes</span>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 mb-6">
-                  <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-2" />
-                    Tokens ilimitados
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-2" />
-                    Más variedad de plantillas
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-2" />
-                    Control de versiones
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-2" />
-                    Exportación PDF
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-2" />
-                    Marca personalizada
-                  </li>
-                </ul>
-                <Button className="w-full bg-transparent" variant="outline">
-                  Elegir Business
-                </Button>
               </CardContent>
             </Card>
           </div>
