@@ -15,6 +15,14 @@ export async function POST(req: Request) {
     const bgColor = String(form.get("bgColor") ?? "#FFFFFF")
     const file = form.get("image") as File | null
     const imgBuf = file ? Buffer.from(await file.arrayBuffer()) : null
+    
+    console.log("Form data received:")
+    console.log("- text length:", text.length)
+    console.log("- template:", template)
+    console.log("- textColor:", textColor)
+    console.log("- bgColor:", bgColor)
+    console.log("- file:", file ? `${file.name} (${file.type}, ${file.size} bytes)` : "null")
+    console.log("- imgBuf:", imgBuf ? `${imgBuf.length} bytes` : "null")
 
     const margin = template === "compact" ? 30 : 50
     const titleFontSize = template === "compact" ? 16 : 20
@@ -46,21 +54,26 @@ export async function POST(req: Request) {
     if (imgBuf && file) {
       try {
         let image
-        console.log("Processing image, type:", file.type, "size:", file.size)
+        console.log("Processing image, type:", file.type, "size:", file.size, "buffer length:", imgBuf.length)
         
         // Validate file type and size
         if (file.size > 10 * 1024 * 1024) { // 10MB limit
           console.warn("Image too large, skipping")
         } else if (file.type === "image/jpeg" || file.type === "image/jpg") {
+          console.log("Embedding JPEG image...")
           image = await pdfDoc.embedJpg(imgBuf)
+          console.log("JPEG image embedded successfully")
         } else if (file.type === "image/png") {
+          console.log("Embedding PNG image...")
           image = await pdfDoc.embedPng(imgBuf)
+          console.log("PNG image embedded successfully")
         } else {
           console.warn("Unsupported image type:", file.type)
         }
 
         if (image) {
           const imgDims = image.scaleToFit(width - margin * 2, 280)
+          console.log("Image dimensions:", imgDims.width, "x", imgDims.height)
           page.drawImage(image, {
             x: width / 2 - imgDims.width / 2,
             y: cursorY - imgDims.height,
@@ -68,12 +81,17 @@ export async function POST(req: Request) {
             height: imgDims.height,
           })
           cursorY -= imgDims.height + 20
-          console.log("Image embedded successfully")
+          console.log("Image drawn on page successfully, new cursorY:", cursorY)
+        } else {
+          console.warn("No image object created")
         }
       } catch (imageError) {
         console.error("Error processing image:", imageError)
+        console.error("Image error stack:", imageError?.stack)
         // Continue without image instead of failing completely
       }
+    } else {
+      console.log("No image to process - imgBuf:", !!imgBuf, "file:", !!file)
     }
 
     // Parse HTML content

@@ -161,7 +161,7 @@ export default function ProyectoPage({ params }: { params: { id: string } }) {
       {/* Header */}
       <header className="border-b">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/app" className="flex items-center space-x-2">
+          <Link href="/" className="flex items-center space-x-2">
             <Image src="/logo.png" width={24} height={24} alt="SpeedyPDF" className="rounded" />
             <span className="text-xl font-semibold">SpeedyPDF</span>
           </Link>
